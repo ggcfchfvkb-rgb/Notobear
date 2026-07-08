@@ -2537,6 +2537,8 @@
         </div>
     </div>
 
+    <!-- 引入 JSZip 库用于打包下载 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         // ============================================================
         //  ★ 主题记忆：从 localStorage 读取/保存
@@ -3734,12 +3736,27 @@
             a.click();
         }
 
+        // ★ 修改：全部下载改为打包成ZIP压缩包
         async function dlAll() {
             if (!saved.length) { alert('没有已保存预览'); return; }
-            for (var i = 0; i < saved.length; i++) {
-                await new Promise(function(r) { setTimeout(r, 300); });
-                dlSaved(i);
-            }
+            var zip = new JSZip();
+            var promises = saved.map(function(s, i) {
+                return fetch(s.url)
+                    .then(function(res) { return res.blob(); })
+                    .then(function(blob) {
+                        var filename = 'bear_' + s.range.replace('~', '-') + '.png';
+                        zip.file(filename, blob);
+                    });
+            });
+            await Promise.all(promises);
+            var content = await zip.generateAsync({ type: 'blob' });
+            var a = document.createElement('a');
+            a.href = URL.createObjectURL(content);
+            a.download = 'bear_collage_all.zip';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
         }
 
         function openM(i) {
