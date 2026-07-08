@@ -3454,7 +3454,7 @@
             c.drawImage(img, sx, sy, sw, sh, x, y, w, h);
         }
 
-        // ★ 修改 drawNum：增加文字描边支持
+        // ★ 修改 drawNum：修复纯数字颜色控制，并增加文字描边支持
         function drawNum(c, num, style, pos, x, y, w, h, size, color, bgcol, bdw) {
             var r = size * 0.75,
                 mg = 10,
@@ -3511,7 +3511,8 @@
                 c.lineWidth = size / 6;
                 c.strokeText(String(num), cx, cy);
             }
-            c.fillStyle = (style === 'border' || style === 'border-rect' || style === 'plain') ? bgcol : color;
+            // 修复：数字颜色始终由 color 参数控制，背景/边框由 bgcol 控制
+            c.fillStyle = color;
             c.fillText(String(num), cx, cy);
             c.restore();
         }
