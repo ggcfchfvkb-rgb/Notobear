@@ -2754,4 +2754,1026 @@
             saveThemePref(isDark ? 'dark' : 'light', schemeIdx, hex);
         }
 
-        function setMode(m
+        function setMode(m) {
+            isDark = (m === 'dark');
+            document.documentElement.setAttribute('data-theme', m);
+            document.getElementById('lBtn').classList.toggle('active', !isDark);
+            document.getElementById('dBtn').classList.toggle('active', isDark);
+            document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
+            applyScheme(schemeIdx, document.querySelectorAll('.cdot')[schemeIdx]);
+            // ★ 保存 theme
+            saveThemePref(m, schemeIdx, document.getElementById('customAccent').value);
+        }
+
+        function toggleDark() { setMode(isDark ? 'light' : 'dark'); }
+
+        function togglePopup() { document.getElementById('themePopup').classList.toggle('open'); }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.theme-popup') && !e.target.closest('.icon-btn')) document.getElementById('themePopup')
+                .classList.remove('open');
+        });
+
+        function togSec(t) { t.classList.toggle('collapsed'); var b = t.nextElementSibling; if (b) b.classList.toggle('hide'); }
+
+        function switchTab(name, btn) {
+            document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('on'); });
+            document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('on'); });
+            document.getElementById('tab-' + name).classList.add('on');
+            btn.classList.add('on');
+            document.getElementById('addImgSection').style.display = (name === 'layout') ? '' : 'none';
+            if (name !== 'text') txtDraft = null;
+            if (name !== 'wm') wmDraft = null;
+            if (name === 'ppwm') { syncPPAlphaThumbs();
+                refreshPhotoPicker(); }
+            renderCanvas();
+        }
+
+        function goToPPWMTab() { var btn = document.querySelectorAll('.tab-btn')[5];
+            switchTab('ppwm', btn); }
+
+        (function() {
+            var gp = document.getElementById('gridPicker');
+            for (var r = 1; r <= 6; r++) {
+                for (var c = 1; c <= 6; c++) {
+                    (function(r, c) {
+                        var el = document.createElement('div');
+                        el.className = 'gcell';
+                        el.dataset.r = r;
+                        el.dataset.c = c;
+                        el.textContent = r + '×' + c;
+                        el.onclick = function() { gRows = r;
+                            gCols = c;
+                            hiliteGrid(r, c);
+                            syncManual();
+                            renderCanvas(); };
+                        gp.appendChild(el);
+                    })(r, c);
+                }
+            }
+            hiliteGrid(2, 2);
+        })();
+
+        function hiliteGrid(r, c) {
+            document.querySelectorAll('.gcell').forEach(function(el) {
+                el.classList.toggle('sel', +el.dataset.r <= r && +el.dataset.c <= c);
+            });
+            document.getElementById('gridLabel').textContent = r + ' 行 × ' + c + ' 列';
+            document.getElementById('layoutDisp').textContent = r + '×' + c;
+        }
+
+        function syncManual() { document.getElementById('mRows').value = gRows;
+            document.getElementById('mCols').value = gCols; }
+
+        function setManual() { gRows = Math.max(1, Math.min(10, +document.getElementById('mRows').value || 1));
+            gCols = Math.max(1, Math.min(10, +document.getElementById('mCols').value || 1));
+            hiliteGrid(Math.min(gRows, 6), Math.min(gCols, 6));
+            renderCanvas(); }
+
+        function setRatio(r, el) { curRatio = r;
+            document.querySelectorAll('.ropt').forEach(function(e) { e.classList.remove('on'); });
+            el.classList.add('on');
+            document.getElementById('ratioDisp').textContent = r;
+            renderCanvas(); }
+
+        var dz = document.getElementById('dropZone'),
+            fi = document.getElementById('fileInput');
+        dz.addEventListener('click', function() { fi.click(); });
+        dz.addEventListener('dragover', function(e) { e.preventDefault();
+            dz.classList.add('drag'); });
+        dz.addEventListener('dragleave', function() { dz.classList.remove('drag'); });
+        dz.addEventListener('drop', function(e) { e.preventDefault();
+            dz.classList.remove('drag');
+            handleFiles(e.dataTransfer.files); });
+        fi.addEventListener('change', function(e) { handleFiles(e.target.files);
+            fi.value = ''; });
+
+        function handleFiles(files) {
+            Array.from(files).forEach(function(f) {
+                if (!f.type.startsWith('image/')) return;
+                var r = new FileReader();
+                r.onload = function(ev) {
+                    var img = new Image();
+                    img.onload = function() {
+                        imgs.push({ el: img, name: f.name, src: ev.target.result });
+                        refreshImgs();
+                        renderCanvas();
+                    };
+                    img.src = ev.target.result;
+                };
+                r.readAsDataURL(f);
+            });
+        }
+
+        function refreshImgs() {
+            var sn = +document.getElementById('startNum').value;
+            document.getElementById('imgList').innerHTML = imgs.map(function(im, i) {
+                return '<div class="img-item"><img src="' + im.src + '"><span class="nm">' + (sn + i) + '. ' + im
+                    .name + '</span><button class="dl" onclick="rmImg(' + i + ')">✕</button></div>';
+            }).join('');
+            document.getElementById('imgCount').textContent = imgs.length;
+            updateRange();
+            refreshPhotoPicker();
+        }
+
+        function rmImg(i) {
+            imgs.splice(i, 1);
+            perPhotoWMs = perPhotoWMs.map(function(wm) {
+                wm.targets = wm.targets.filter(function(t) { return t !== i; }).map(function(t) { return t > i ? t -
+                        1 : t; });
+                return wm;
+            }).filter(function(wm) { return wm.targets.length > 0; });
+            var ns = new Set();
+            ppwmDraftTargets.forEach(function(t) { if (t !== i) ns.add(t > i ? t - 1 : t); });
+            ppwmDraftTargets = ns;
+            refreshPerPhotoWMs();
+            refreshImgs();
+            updatePPWMDraft();
+            renderCanvas();
+        }
+
+        function clearAll() {
+            imgs = [];
+            txts = [];
+            wmLayers = [];
+            perPhotoWMs = [];
+            txtDraft = null;
+            wmDraft = null;
+            ppwmDraftImg = null;
+            ppwmDraftSrc = '';
+            ppwmDraftTargets = new Set();
+            ppwmDraft = null;
+            refreshImgs();
+            refreshTxts();
+            refreshWMLayers();
+            refreshPerPhotoWMs();
+            cancelWMDraft();
+            cancelPPWMDraft();
+            renderCanvas();
+        }
+
+        function updateRange() {
+            var sn = +document.getElementById('startNum').value,
+                n = imgs.length;
+            document.getElementById('rangeDisp').textContent = n ? (sn + '~' + (sn + n - 1)) : '—';
+        }
+
+        function setNS(s, el) {
+            curNS = s;
+            document.querySelectorAll('.nsopt').forEach(function(e) { e.classList.remove('on'); });
+            el.classList.add('on');
+            renderCanvas();
+        }
+
+        function setTS(s, el) {
+            curTS = s;
+            document.querySelectorAll('.tsopt').forEach(function(e) { e.classList.remove('on'); });
+            el.classList.add('on');
+            updateTxtPreview();
+        }
+
+        function updateTxtPreview() {
+            var pc = document.getElementById('txtPreviewCanvas'),
+                px = pc.getContext('2d'),
+                W = pc.width,
+                H = pc.height;
+            var content = document.getElementById('txtC').value || '预览文字',
+                size = +document.getElementById('txtSz').value || 22;
+            var color = document.getElementById('txtCol').value,
+                bold = document.getElementById('txtBold').checked;
+            var rot = gv('txtRotN'),
+                alpha = gv('txtAlphaN') / 100 || 1;
+            px.clearRect(0, 0, W, H);
+            px.fillStyle = '#eee';
+            px.fillRect(0, 0, W, H);
+            for (var gy = 0; gy < H; gy += 8)
+                for (var gx = 0; gx < W; gx += 8) {
+                    if ((gx / 8 + gy / 8) % 2 === 0) { px.fillStyle = '#ddd';
+                        px.fillRect(gx, gy, 8, 8); }
+                }
+            px.save();
+            px.globalAlpha = alpha;
+            px.font = (bold ? 'bold ' : '') + size + 'px sans-serif';
+            px.fillStyle = color;
+            if (curTS === 'tile' || curTS === 'diagonal') {
+                var angle = rot * Math.PI / 180,
+                    step = size * (content.length * 0.65 + 1.5),
+                    stepY = size * 2;
+                px.globalAlpha = alpha * 0.6;
+                px.textAlign = 'left';
+                px.textBaseline = 'middle';
+                for (var ty2 = -H; ty2 < H * 2; ty2 += stepY)
+                    for (var tx2 = -W; tx2 < W * 2; tx2 += step) {
+                        px.save();
+                        px.translate(tx2, ty2);
+                        px.rotate(angle);
+                        px.fillText(content, 0, 0);
+                        px.restore();
+                    }
+            } else {
+                px.textAlign = 'center';
+                px.textBaseline = 'middle';
+                if (curTS === 'border') {
+                    px.strokeStyle = 'rgba(0,0,0,0.5)';
+                    px.lineWidth = size / 8;
+                    px.strokeText(content, W / 2, H / 2);
+                    px.fillText(content, W / 2, H / 2);
+                } else if (curTS === 'shadow') {
+                    px.shadowColor = 'rgba(0,0,0,0.7)';
+                    px.shadowBlur = 6;
+                    px.shadowOffsetX = 2;
+                    px.shadowOffsetY = 2;
+                    px.fillText(content, W / 2, H / 2);
+                } else {
+                    px.shadowColor = 'rgba(0,0,0,0.35)';
+                    px.shadowBlur = 3;
+                    px.fillText(content, W / 2, H / 2);
+                }
+            }
+            px.restore();
+            var c = document.getElementById('txtC').value.trim();
+            txtDraft = c ? { content: c, size: size, color: color, x: +document.getElementById('txtX').value, y: +
+                    document.getElementById('txtY').value, bold: bold, style: curTS, rot: rot, alpha: alpha } : null;
+            renderCanvas();
+        }
+
+        function addText() {
+            var c = document.getElementById('txtC').value.trim();
+            if (!c) return;
+            txts.push({
+                content: c,
+                size: +document.getElementById('txtSz').value,
+                color: document.getElementById('txtCol').value,
+                x: +document.getElementById('txtX').value,
+                y: +document.getElementById('txtY').value,
+                bold: document.getElementById('txtBold').checked,
+                style: curTS,
+                rot: gv('txtRotN'),
+                alpha: gv('txtAlphaN') / 100
+            });
+            document.getElementById('txtC').value = '';
+            txtDraft = null;
+            updateTxtPreview();
+            refreshTxts();
+            renderCanvas();
+        }
+
+        function refreshTxts() {
+            var n = txts.length;
+            document.getElementById('txtCount').textContent = n;
+            document.getElementById('txtCountBadge').textContent = n;
+            document.getElementById('textList').innerHTML = txts.map(function(t, i) {
+                return '<div class="litem"><span class="litem-badge">T' + (i + 1) +
+                    '</span><span class="litem-label" style="color:' + t.color + '">[' + t.style + '] "' + t
+                    .content + '"</span><button class="litem-del" onclick="rmTxt(' + i + ')">✕</button></div>';
+            }).join('');
+        }
+
+        function rmTxt(i) { txts.splice(i, 1);
+            refreshTxts();
+            renderCanvas(); }
+
+        function clearAllTxt() { if (!txts.length) return; if (!confirm('确定清空全部文字层？')) return;
+            txts = [];
+            txtDraft = null;
+            refreshTxts();
+            renderCanvas(); }
+
+        function loadWM(input) {
+            var f = input.files[0];
+            if (!f) return;
+            var r = new FileReader();
+            r.onload = function(ev) {
+                wmDraftSrc = ev.target.result;
+                var img = new Image();
+                img.onload = function() {
+                    wmDraftImg = img;
+                    var p = document.getElementById('wmDraftPrev');
+                    p.innerHTML = '<img src="' + ev.target.result + '"><span class="draft-indicator">草稿预览中</span>';
+                    p.classList.add('has-img');
+                    updateWMDraft();
+                };
+                img.src = ev.target.result;
+            };
+            r.readAsDataURL(f);
+        }
+
+        function updateWMDraft() {
+            if (!wmDraftImg) { wmDraft = null;
+                renderCanvas(); return; }
+            wmDraft = { img: wmDraftImg, src: wmDraftSrc, alpha: gv('wmAN') / 100, blend: document.getElementById('wmBlend')
+                    .value, sz: gv('wmSzN') / 100, pos: document.getElementById('wmPos').value };
+            renderCanvas();
+        }
+
+        function addWMLayer() {
+            if (!wmDraftImg) { alert('请先选择水印图片~'); return; }
+            wmLayers.push({ img: wmDraftImg, src: wmDraftSrc, alpha: gv('wmAN') / 100, blend: document.getElementById(
+                    'wmBlend').value, sz: gv('wmSzN') / 100, pos: document.getElementById('wmPos').value });
+            cancelWMDraft();
+            refreshWMLayers();
+            renderCanvas();
+        }
+
+        function cancelWMDraft() {
+            wmDraftImg = null;
+            wmDraftSrc = '';
+            wmDraft = null;
+            var p = document.getElementById('wmDraftPrev');
+            p.innerHTML = '<span class="ph">未选择水印图片</span>';
+            p.classList.remove('has-img');
+            document.getElementById('wmFile').value = '';
+            renderCanvas();
+        }
+
+        function previewWMDraft() { if (!wmDraftSrc) return;
+            openSingleModal(wmDraftSrc); }
+
+        function refreshWMLayers() {
+            var n = wmLayers.length;
+            document.getElementById('wmCount').textContent = n;
+            document.getElementById('wmCountBadge').textContent = n;
+            document.getElementById('wmLayerList').innerHTML = wmLayers.map(function(w, i) {
+                return '<div class="litem"><img class="litem-thumb" src="' + w.src + '"><span class="litem-badge">W' +
+                    (i + 1) + '</span><span class="litem-label">' + w.pos + ' ' + Math.round(w.alpha * 100) +
+                    '% ' + w.blend + '</span><button class="litem-del" onclick="rmWMLayer(' + i +
+                    ')">✕</button></div>';
+            }).join('');
+        }
+
+        function rmWMLayer(i) { wmLayers.splice(i, 1);
+            refreshWMLayers();
+            renderCanvas(); }
+
+        function clearAllWM() { if (!wmLayers.length) return; if (!confirm('确定清空全部水印层？')) return;
+            wmLayers = [];
+            wmDraft = null;
+            cancelWMDraft();
+            refreshWMLayers();
+            renderCanvas(); }
+
+        function loadAlpha(input) {
+            var f = input.files[0];
+            if (!f) return;
+            var r = new FileReader();
+            r.onload = function(ev) {
+                var img = new Image();
+                img.onload = function() { alphaOrig = img;
+                    drawAlphaBefore();
+                    prevAlpha(); };
+                img.src = ev.target.result;
+            };
+            r.readAsDataURL(f);
+        }
+
+        function drawAlphaBefore() {
+            var bc = document.getElementById('aBefore'),
+                bx = bc.getContext('2d');
+            bc.width = 100;
+            bc.height = 70;
+            var s = Math.min(100 / alphaOrig.width, 70 / alphaOrig.height);
+            bx.clearRect(0, 0, 100, 70);
+            bx.drawImage(alphaOrig, (100 - alphaOrig.width * s) / 2, (70 - alphaOrig.height * s) / 2, alphaOrig.width * s,
+                alphaOrig.height * s);
+        }
+
+        function togGrad() { document.getElementById('gradG').style.display = document.getElementById('aMode').value ===
+                'gradient' ? '' : 'none'; }
+
+        function doAlpha(src, tc, mode, st, tc2) {
+            var tmp = document.createElement('canvas');
+            tmp.width = src.width;
+            tmp.height = src.height;
+            var tx = tmp.getContext('2d');
+            tx.drawImage(src, 0, 0);
+            var id = tx.getImageData(0, 0, tmp.width, tmp.height),
+                d = id.data,
+                s = st / 100;
+            for (var i = 0; i < d.length; i += 4) {
+                if (d[i + 3] === 0) continue;
+                var lum = (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114) / 255;
+                var nr, ng, nb;
+                if (mode === 'tint') { nr = tc.r * lum;
+                    ng = tc.g * lum;
+                    nb = tc.b * lum; } else if (mode === 'solid') { nr = tc.r;
+                    ng = tc.g;
+                    nb = tc.b; } else if (mode === 'multiply') { nr = d[i] * tc.r / 255;
+                    ng = d[i + 1] * tc.g / 255;
+                    nb = d[i + 2] * tc.b / 255; } else { nr = tc.r + (tc2.r - tc.r) * lum;
+                    ng = tc.g + (tc2.g - tc.g) * lum;
+                    nb = tc.b + (tc2.b - tc.b) * lum; }
+                d[i] = Math.round(d[i] * (1 - s) + nr * s);
+                d[i + 1] = Math.round(d[i + 1] * (1 - s) + ng * s);
+                d[i + 2] = Math.round(d[i + 2] * (1 - s) + nb * s);
+            }
+            tx.putImageData(id, 0, 0);
+            alphaURL = tmp.toDataURL('image/png');
+            return tmp;
+        }
+
+        function prevAlpha() {
+            if (!alphaOrig) return;
+            var result = doAlpha(alphaOrig, h2r(document.getElementById('aColor').value), document.getElementById('aMode')
+                .value, gv('aStrN'), h2r(document.getElementById('aColor2').value));
+            var ac = document.getElementById('aAfter'),
+                ax = ac.getContext('2d');
+            ac.width = 100;
+            ac.height = 70;
+            var s = Math.min(100 / result.width, 70 / result.height);
+            ax.clearRect(0, 0, 100, 70);
+            ax.drawImage(result, (100 - result.width * s) / 2, (70 - result.height * s) / 2, result.width * s, result
+                .height * s);
+        }
+
+        function previewAlphaImg(type) {
+            if (type === 'before') { if (!alphaOrig) return; var tmp = document.createElement('canvas');
+                tmp.width = alphaOrig.width;
+                tmp.height = alphaOrig.height;
+                tmp.getContext('2d').drawImage(alphaOrig, 0, 0);
+                openSingleModal(tmp.toDataURL()); } else { if (!alphaURL) return;
+                openSingleModal(alphaURL); }
+        }
+
+        function alphaToGlobalWM() {
+            if (!alphaOrig) { alert('请先选择透明底图片~'); return; }
+            prevAlpha();
+            var img = new Image();
+            img.onload = function() {
+                wmDraftImg = img;
+                wmDraftSrc = alphaURL;
+                var p = document.getElementById('wmDraftPrev');
+                p.innerHTML = '<img src="' + alphaURL + '"><span class="draft-indicator">草稿预览中</span>';
+                p.classList.add('has-img');
+                document.querySelectorAll('.tab-btn')[3].click();
+                updateWMDraft();
+            };
+            img.src = alphaURL;
+        }
+
+        function dlAlpha() {
+            if (!alphaURL) { if (!alphaOrig) { alert('请先选择图片'); return; }
+                prevAlpha(); }
+            var a = document.createElement('a');
+            a.download = 'recolored_' + Date.now() + '.png';
+            a.href = alphaURL;
+            a.click();
+        }
+
+        function syncPPAlphaThumbs() {
+            var pb = document.getElementById('ppaBefore'),
+                pbx = pb.getContext('2d');
+            pb.width = 90;
+            pb.height = 60;
+            if (alphaOrig) {
+                var s = Math.min(90 / alphaOrig.width, 60 / alphaOrig.height);
+                pbx.clearRect(0, 0, 90, 60);
+                pbx.drawImage(alphaOrig, (90 - alphaOrig.width * s) / 2, (60 - alphaOrig.height * s) / 2, alphaOrig.width *
+                    s, alphaOrig.height * s);
+            } else { pbx.clearRect(0, 0, 90, 60);
+                pbx.fillStyle = '#ddd';
+                pbx.fillRect(0, 0, 90, 60); }
+            var pa = document.getElementById('ppaAfter'),
+                pax = pa.getContext('2d');
+            pa.width = 90;
+            pa.height = 60;
+            if (alphaURL) {
+                var img = new Image();
+                img.onload = function() {
+                    var s2 = Math.min(90 / img.width, 60 / img.height);
+                    pax.clearRect(0, 0, 90, 60);
+                    pax.drawImage(img, (90 - img.width * s2) / 2, (60 - img.height * s2) / 2, img.width * s2, img
+                        .height * s2);
+                };
+                img.src = alphaURL;
+            } else { pax.clearRect(0, 0, 90, 60);
+                pax.fillStyle = '#ddd';
+                pax.fillRect(0, 0, 90, 60); }
+        }
+
+        function loadPPAlpha(input) {
+            var f = input.files[0];
+            if (!f) return;
+            var r = new FileReader();
+            r.onload = function(ev) {
+                var img = new Image();
+                img.onload = function() {
+                    ppwmDraftImg = img;
+                    ppwmDraftSrc = ev.target.result;
+                    var p = document.getElementById('ppwmImgPrev');
+                    p.innerHTML = '<img src="' + ev.target.result + '"><span class="draft-indicator">已选择</span>';
+                    p.classList.add('has-img');
+                    updatePPWMDraft();
+                };
+                img.src = ev.target.result;
+            };
+            r.readAsDataURL(f);
+        }
+
+        function useCurAlphaForPP() {
+            if (!alphaURL) { alert('🐻 请先在「改色」Tab 完成改色操作~'); return; }
+            var img = new Image();
+            img.onload = function() {
+                ppwmDraftImg = img;
+                ppwmDraftSrc = alphaURL;
+                var p = document.getElementById('ppwmImgPrev');
+                p.innerHTML = '<img src="' + alphaURL + '"><span class="draft-indicator">已选择</span>';
+                p.classList.add('has-img');
+                updatePPWMDraft();
+            };
+            img.src = alphaURL;
+        }
+
+        function previewPPWMImg() { if (!ppwmDraftSrc) return;
+            openSingleModal(ppwmDraftSrc); }
+
+        function refreshPhotoPicker() {
+            var grid = document.getElementById('photoPicker'),
+                sn = +document.getElementById('startNum').value;
+            if (imgs.length === 0) { grid.innerHTML = '<div class="pp-empty">🐻 请先在「布局」Tab 添加图片</div>'; return; }
+            grid.innerHTML = imgs.map(function(im, i) {
+                var sel = ppwmDraftTargets.has(i);
+                return '<div class="ppick-cell' + (sel ? ' sel' : '') + '" onclick="togglePick(' + i +
+                    ')">' +
+                    '<img src="' + im.src + '"><div class="ppick-idx">' + (sn + i) +
+                    '</div><div class="ppick-check">✓</div></div>';
+            }).join('');
+            document.getElementById('ppPickCount').textContent = ppwmDraftTargets.size;
+        }
+
+        function togglePick(i) {
+            if (ppwmDraftTargets.has(i)) ppwmDraftTargets.delete(i);
+            else ppwmDraftTargets.add(i);
+            refreshPhotoPicker();
+            updatePPWMDraft();
+        }
+
+        function selectAllPick() { for (var i = 0; i < imgs.length; i++) ppwmDraftTargets.add(i);
+            refreshPhotoPicker();
+            updatePPWMDraft(); }
+
+        function clearAllPick() { ppwmDraftTargets = new Set();
+            refreshPhotoPicker();
+            updatePPWMDraft(); }
+
+        function updatePPWMDraft() {
+            var dz = document.getElementById('ppwmDraftZone'),
+                dg = document.getElementById('ppwmDraftGrid');
+            if (!ppwmDraftImg || ppwmDraftTargets.size === 0) {
+                ppwmDraft = null;
+                dz.classList.remove('live');
+                dg.innerHTML = '<div class="ppwm-no-img">' + (ppwmDraftImg ? '👆 请勾选目标图片格' : '👆 请先选择水印图片') + '</div>';
+                renderCanvas();
+                return;
+            }
+            ppwmDraft = {
+                img: ppwmDraftImg,
+                src: ppwmDraftSrc,
+                alpha: gv('ppwmAN') / 100,
+                blend: document.getElementById('ppwmBlend').value,
+                sz: gv('ppwmSzN') / 100,
+                pos: document.getElementById('ppwmPos').value,
+                targets: Array.from(ppwmDraftTargets).sort(function(a, b) { return a - b; })
+            };
+            dz.classList.add('live');
+            var sn = +document.getElementById('startNum').value,
+                cellSz = 42;
+            dg.innerHTML = imgs.map(function(im, i) {
+                var sel = ppwmDraftTargets.has(i);
+                return '<div class="ppwm-draft-cell" style="width:' + cellSz + 'px;height:' + cellSz +
+                    'px;"><img class="base" src="' + im.src + '">' + (sel ?
+                        '<div class="overlay-tag">✓' + (sn + i) + '</div>' :
+                        '<div class="no-tag">' + (sn + i) + '</div>') + '</div>';
+            }).join('');
+            renderCanvas();
+        }
+
+        function confirmAddPPWM() {
+            if (!ppwmDraftImg) { alert('🐻 请先选择水印图片~'); return; }
+            if (ppwmDraftTargets.size === 0) { alert('🐻 请先勾选要添加水印的图片格~'); return; }
+            perPhotoWMs.push({
+                img: ppwmDraftImg,
+                src: ppwmDraftSrc,
+                alpha: gv('ppwmAN') / 100,
+                blend: document.getElementById('ppwmBlend').value,
+                sz: gv('ppwmSzN') / 100,
+                pos: document.getElementById('ppwmPos').value,
+                targets: Array.from(ppwmDraftTargets).sort(function(a, b) { return a - b; })
+            });
+            cancelPPWMDraft();
+            refreshPerPhotoWMs();
+            renderCanvas();
+        }
+
+        function cancelPPWMDraft() {
+            ppwmDraft = null;
+            ppwmDraftTargets = new Set();
+            var p = document.getElementById('ppwmImgPrev');
+            p.innerHTML = '<span class="ph">未选择</span>';
+            p.classList.remove('has-img');
+            document.getElementById('ppAlphaFile').value = '';
+            document.getElementById('ppwmDraftZone').classList.remove('live');
+            document.getElementById('ppwmDraftGrid').innerHTML = '<div class="ppwm-no-img">选择图片和目标格后此处显示示意</div>';
+            refreshPhotoPicker();
+            renderCanvas();
+        }
+
+        function refreshPerPhotoWMs() {
+            var n = perPhotoWMs.length;
+            document.getElementById('ppwmCount').textContent = n;
+            document.getElementById('ppwmCountBadge').textContent = n;
+            var sn = +document.getElementById('startNum').value;
+            document.getElementById('perPhotoWMList').innerHTML = perPhotoWMs.map(function(w, i) {
+                var tags = w.targets.map(function(t) { return '<span class="ppwm-target-tag">' + (sn + t) +
+                        '</span>'; }).join('');
+                return '<div class="ppwm-item"><div class="ppwm-item-top"><img class="ppwm-item-thumb" src="' +
+                    w.src + '"><div class="ppwm-item-info"><div class="ppwm-item-title">指定水印 #' + (i + 1) +
+                    '</div><div class="ppwm-item-params">' + w.pos + ' · ' + Math.round(w.alpha * 100) +
+                    '% · ' + w.blend + '</div></div><button class="ppwm-item-del" onclick="rmPPWM(' + i +
+                    ')">✕</button></div><div class="ppwm-targets">叠加到：' + tags + '</div></div>';
+            }).join('');
+        }
+
+        function rmPPWM(i) { perPhotoWMs.splice(i, 1);
+            refreshPerPhotoWMs();
+            renderCanvas(); }
+
+        function clearAllPPWM() { if (!perPhotoWMs.length) return; if (!confirm('确定清空全部指定水印层？')) return;
+            perPhotoWMs = [];
+            refreshPerPhotoWMs();
+            renderCanvas(); }
+
+        function calcLayout() {
+            var gap = gv('gapN'),
+                pd = gv('padN'),
+                cw = gv('cwN'),
+                ch = gv('chN');
+            var W = gCols * cw + (gCols - 1) * gap + pd * 2,
+                H = gRows * ch + (gRows - 1) * gap + pd * 2;
+            if (curRatio !== 'free') {
+                var p = curRatio.split(':'),
+                    rw = +p[0],
+                    rh = +p[1];
+                if (W / H > rw / rh) H = Math.round(W * rh / rw);
+                else W = Math.round(H * rw / rh);
+            }
+            var acw = (W - pd * 2 - (gCols - 1) * gap) / gCols,
+                ach = (H - pd * 2 - (gRows - 1) * gap) / gRows;
+            var items = [];
+            for (var i = 0; i < imgs.length; i++) {
+                var rr = Math.floor(i / gCols),
+                    cc = i % gCols;
+                items.push({ x: pd + cc * (acw + gap), y: pd + rr * (ach + gap), w: acw, h: ach });
+            }
+            return { items: items, W: W, H: H };
+        }
+
+        function drawRR(c, x, y, w, h, r) {
+            c.beginPath();
+            c.moveTo(x + r, y);
+            c.lineTo(x + w - r, y);
+            c.quadraticCurveTo(x + w, y, x + w, y + r);
+            c.lineTo(x + w, y + h - r);
+            c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            c.lineTo(x + r, y + h);
+            c.quadraticCurveTo(x, y + h, x, y + h - r);
+            c.lineTo(x, y + r);
+            c.quadraticCurveTo(x, y, x + r, y);
+            c.closePath();
+        }
+
+        function drawCover(c, img, x, y, w, h) {
+            var ir = img.width / img.height,
+                cr = w / h,
+                sx, sy, sw, sh;
+            if (ir > cr) { sh = img.height;
+                sw = sh * cr;
+                sx = (img.width - sw) / 2;
+                sy = 0; } else { sw = img.width;
+                sh = sw / cr;
+                sx = 0;
+                sy = (img.height - sh) / 2; }
+            c.drawImage(img, sx, sy, sw, sh, x, y, w, h);
+        }
+
+        // ★ 修改 drawNum：增加文字描边支持
+        function drawNum(c, num, style, pos, x, y, w, h, size, color, bgcol, bdw) {
+            var r = size * 0.75,
+                mg = 10,
+                cx, cy;
+            if (pos === 'tl') { cx = x + r + mg;
+                cy = y + r + mg; } else if (pos === 'tr') { cx = x + w - r - mg;
+                cy = y + r + mg; } else if (pos === 'bl') { cx = x + r + mg;
+                cy = y + h - r - mg; } else if (pos === 'br') { cx = x + w - r - mg;
+                cy = y + h - r - mg; } else { cx = x + w / 2;
+                cy = y + h / 2; }
+            c.save();
+            if (style === 'circle') {
+                c.beginPath();
+                c.arc(cx, cy, r, 0, Math.PI * 2);
+                c.fillStyle = bgcol;
+                c.shadowColor = 'rgba(0,0,0,0.25)';
+                c.shadowBlur = 6;
+                c.shadowOffsetY = 2;
+                c.fill();
+            } else if (style === 'rect') {
+                c.shadowColor = 'rgba(0,0,0,0.25)';
+                c.shadowBlur = 6;
+                c.shadowOffsetY = 2;
+                c.fillStyle = bgcol;
+                c.beginPath();
+                c.roundRect(cx - r, cy - r, r * 2, r * 2, 6);
+                c.fill();
+            } else if (style === 'border') {
+                c.beginPath();
+                c.arc(cx, cy, r, 0, Math.PI * 2);
+                c.strokeStyle = bgcol;
+                c.lineWidth = bdw;
+                c.stroke();
+            } else if (style === 'border-rect') {
+                c.strokeStyle = bgcol;
+                c.lineWidth = bdw;
+                c.beginPath();
+                c.roundRect(cx - r, cy - r, r * 2, r * 2, 6);
+                c.stroke();
+            }
+            c.restore();
+            c.save();
+            c.font = 'bold ' + size + 'px sans-serif';
+            c.textAlign = 'center';
+            c.textBaseline = 'middle';
+            var strokeOn = document.getElementById('numStroke').checked;
+            var strokeCol = document.getElementById('numStrokeColor').value;
+            if (style === 'plain') {
+                c.shadowColor = 'rgba(0,0,0,0.5)';
+                c.shadowBlur = 4;
+            }
+            if (strokeOn) {
+                c.strokeStyle = strokeCol;
+                c.lineWidth = size / 6;
+                c.strokeText(String(num), cx, cy);
+            }
+            c.fillStyle = (style === 'border' || style === 'border-rect' || style === 'plain') ? bgcol : color;
+            c.fillText(String(num), cx, cy);
+            c.restore();
+        }
+
+        function drawTxt(c, t, W, H) {
+            c.save();
+            c.font = (t.bold ? 'bold ' : '') + t.size + 'px sans-serif';
+            var alpha = t.alpha != null ? t.alpha : 1;
+            if (t.style === 'tile' || t.style === 'diagonal') {
+                var angle = t.rot * Math.PI / 180,
+                    step = t.size * (t.content.length * 0.65 + 1.5),
+                    stepY = t.size * 2.5;
+                c.globalAlpha = alpha * 0.18;
+                c.fillStyle = t.color;
+                c.textAlign = 'left';
+                c.textBaseline = 'middle';
+                for (var ty = -H; ty < H * 2; ty += stepY)
+                    for (var tx = -W; tx < W * 2; tx += step) {
+                        c.save();
+                        c.translate(tx, ty);
+                        c.rotate(angle);
+                        c.fillText(t.content, 0, 0);
+                        c.restore();
+                    }
+            } else {
+                var ppx = (t.x / 100) * W,
+                    ppy = (t.y / 100) * H;
+                c.globalAlpha = alpha;
+                c.textAlign = 'center';
+                c.textBaseline = 'middle';
+                if (t.style === 'border') {
+                    c.strokeStyle = 'rgba(0,0,0,0.6)';
+                    c.lineWidth = t.size / 8;
+                    c.strokeText(t.content, ppx, ppy);
+                    c.fillStyle = t.color;
+                    c.fillText(t.content, ppx, ppy);
+                } else if (t.style === 'shadow') {
+                    c.shadowColor = 'rgba(0,0,0,0.7)';
+                    c.shadowBlur = 8;
+                    c.shadowOffsetX = 2;
+                    c.shadowOffsetY = 2;
+                    c.fillStyle = t.color;
+                    c.fillText(t.content, ppx, ppy);
+                } else {
+                    c.fillStyle = t.color;
+                    c.shadowColor = 'rgba(0,0,0,0.45)';
+                    c.shadowBlur = 4;
+                    c.fillText(t.content, ppx, ppy);
+                }
+            }
+            c.restore();
+        }
+
+        function drawWMOnRect(c, wm, x, y, w, h, alpha, blend, sp, pos) {
+            if (!wm) return;
+            var sc = Math.min(w * sp / wm.width, h * sp / wm.height),
+                dw = wm.width * sc,
+                dh = wm.height * sc;
+            c.save();
+            c.globalAlpha = alpha;
+            c.globalCompositeOperation = blend;
+            if (pos === 'tile') {
+                var p = 10;
+                for (var ty = y; ty < y + h; ty += dh + p)
+                    for (var tx = x; tx < x + w; tx += dw + p) c.drawImage(wm, tx, ty, dw, dh);
+            } else {
+                var dx, dy,
+                    mg = 12;
+                if (pos === 'c') { dx = x + (w - dw) / 2;
+                    dy = y + (h - dh) / 2; } else if (pos === 'tl') { dx = x + mg;
+                    dy = y + mg; } else if (pos === 'tr') { dx = x + w - dw - mg;
+                    dy = y + mg; } else if (pos === 'bl') { dx = x + mg;
+                    dy = y + h - dh - mg; } else { dx = x + w - dw - mg;
+                    dy = y + h - dh - mg; }
+                c.drawImage(wm, dx, dy, dw, dh);
+            }
+            c.restore();
+        }
+
+        function drawPPWMOnCell(c, wm, pos, radius) {
+            c.save();
+            c.beginPath();
+            if (radius > 0) drawRR(c, pos.x, pos.y, pos.w, pos.h, radius);
+            else c.rect(pos.x, pos.y, pos.w, pos.h);
+            c.clip();
+            drawWMOnRect(c, wm.img, pos.x, pos.y, pos.w, pos.h, wm.alpha, wm.blend, wm.sz, wm.pos);
+            c.restore();
+        }
+
+        function renderToCtx(c, scale, withDraft) {
+            scale = scale || 1;
+            withDraft = (withDraft !== false);
+            if (imgs.length === 0) {
+                c.canvas.width = 800;
+                c.canvas.height = 600;
+                c.fillStyle = '#fff';
+                c.fillRect(0, 0, 800, 600);
+                c.fillStyle = '#a07850';
+                c.font = 'bold 22px sans-serif';
+                c.textAlign = 'center';
+                c.fillText('🐻 添加图片，开始拼图吧～', 400, 290);
+                c.font = '18px sans-serif';
+                c.fillStyle = '#c09070';
+                c.fillText('🐾  🐾  🐾', 400, 330);
+                return;
+            }
+            var lay = calcLayout();
+            var bg = document.getElementById('bgColor').value,
+                radius = gv('radN');
+            var showN = document.getElementById('showNum').checked,
+                ns = +document.getElementById('numSize').value;
+            var nc = document.getElementById('numColor').value,
+                nb = document.getElementById('numBg').value;
+            var np = document.getElementById('numPos').value,
+                nbw = gv('numBdN');
+            var sn = +document.getElementById('startNum').value;
+            c.canvas.width = lay.W * scale;
+            c.canvas.height = lay.H * scale;
+            c.scale(scale, scale);
+            c.fillStyle = bg;
+            c.fillRect(0, 0, lay.W, lay.H);
+            lay.items.forEach(function(pos, i) {
+                if (i >= imgs.length) return;
+                c.save();
+                if (radius > 0) { drawRR(c, pos.x, pos.y, pos.w, pos.h, radius);
+                    c.clip(); }
+                drawCover(c, imgs[i].el, pos.x, pos.y, pos.w, pos.h);
+                c.restore();
+                perPhotoWMs.forEach(function(wm) {
+                    if (wm.targets.indexOf(i) < 0) return;
+                    drawPPWMOnCell(c, wm, pos, radius);
+                });
+                if (withDraft && ppwmDraft && ppwmDraft.targets.indexOf(i) >= 0) drawPPWMOnCell(c, ppwmDraft,
+                    pos, radius);
+                if (showN) drawNum(c, sn + i, curNS, np, pos.x, pos.y, pos.w, pos.h, ns, nc, nb, nbw);
+            });
+            txts.forEach(function(t) { drawTxt(c, t, lay.W, lay.H); });
+            if (withDraft && txtDraft) drawTxt(c, txtDraft, lay.W, lay.H);
+            wmLayers.forEach(function(wm) {
+                drawWMOnRect(c, wm.img, 0, 0, lay.W, lay.H, wm.alpha, wm.blend, wm.sz, wm.pos);
+            });
+            if (withDraft && wmDraft) drawWMOnRect(c, wmDraft.img, 0, 0, lay.W, lay.H, wmDraft.alpha, wmDraft
+                .blend, wmDraft.sz, wmDraft.pos);
+        }
+
+        function renderCanvas() { renderToCtx(ctx, 1, true);
+            updateRange();
+            document.getElementById('globalNext').textContent = gNext;
+            document.getElementById('nextDisp').textContent = gNext; }
+
+        function saveAndContinue() {
+            if (imgs.length === 0) { alert('🐻 请先添加图片~'); return; }
+            var sn = +document.getElementById('startNum').value,
+                cnt = imgs.length;
+            var exp = document.createElement('canvas'),
+                ec = exp.getContext('2d');
+            renderToCtx(ec, 1, false);
+            saved.push({ url: exp.toDataURL('image/png'), range: sn + '~' + (sn + cnt - 1), cnt: cnt, ts: Date
+                    .now() });
+            gNext = sn + cnt;
+            document.getElementById('startNum').value = gNext;
+            refreshSaved();
+            document.getElementById('globalNext').textContent = gNext;
+            document.getElementById('nextDisp').textContent = gNext;
+            imgs = [];
+            txts = [];
+            wmLayers = [];
+            perPhotoWMs = [];
+            txtDraft = null;
+            wmDraft = null;
+            cancelPPWMDraft();
+            cancelWMDraft();
+            refreshImgs();
+            refreshTxts();
+            refreshWMLayers();
+            refreshPerPhotoWMs();
+            renderCanvas();
+        }
+
+        function refreshSaved() {
+            document.getElementById('savedList').innerHTML = saved.map(function(s, i) {
+                return '<div class="sitem"><img src="' + s.url + '" loading="lazy" ondblclick="openM(' + i +
+                    ')"><div class="smeta"><span class="badge">№' + s.range + '</span><span>' + new Date(s
+                        .ts).toLocaleTimeString() + '</span></div><div class="sbtns"><button class="sv" onclick="openM(' +
+                    i + ')">👁</button><button class="sd" onclick="dlSaved(' + i + ')">💾</button><button class="sx" onclick="delSaved(' +
+                    i + ')">🗑</button></div></div>';
+            }).join('');
+        }
+
+        function delSaved(i) { saved.splice(i, 1);
+            refreshSaved(); }
+
+        function clearSaved() { if (!saved.length) return; if (!confirm('确定清空？')) return;
+            saved = [];
+            refreshSaved(); }
+
+        function resetCtr() { gNext = 1;
+            document.getElementById('startNum').value = 1;
+            document.getElementById('globalNext').textContent = 1;
+            document.getElementById('nextDisp').textContent = 1;
+            renderCanvas(); }
+
+        function dlCurrent(fmt) {
+            if (imgs.length === 0) { alert('没有图片~'); return; }
+            var scale = +document.getElementById('dlScale').value;
+            var exp = document.createElement('canvas'),
+                ec = exp.getContext('2d');
+            renderToCtx(ec, scale, false);
+            var a = document.createElement('a');
+            a.download = 'bear_collage_' + Date.now() + '.' + fmt;
+            a.href = exp.toDataURL(fmt === 'jpeg' ? 'image/jpeg' : 'image/png', 0.93);
+            a.click();
+        }
+
+        function dlSaved(i) {
+            var a = document.createElement('a');
+            a.download = 'bear_' + saved[i].range.replace('~', '-') + '.png';
+            a.href = saved[i].url;
+            a.click();
+        }
+
+        async function dlAll() {
+            if (!saved.length) { alert('没有已保存预览'); return; }
+            for (var i = 0; i < saved.length; i++) {
+                await new Promise(function(r) { setTimeout(r, 300); });
+                dlSaved(i);
+            }
+        }
+
+        function openM(i) {
+            modalMode = 'saved';
+            modalIdx = i;
+            document.getElementById('modalImg').src = saved[i].url;
+            document.getElementById('modalPrev').style.display = '';
+            document.getElementById('modalNext').style.display = '';
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function openSingleModal(src) {
+            modalMode = 'single';
+            document.getElementById('modalImg').src = src;
+            document.getElementById('modalPrev').style.display = 'none';
+            document.getElementById('modalNext').style.display = 'none';
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() { document.getElementById('modal').classList.remove('show'); }
+
+        function navM(d) {
+            if (modalMode !== 'saved') return;
+            modalIdx = (modalIdx + d + saved.length) % saved.length;
+            document.getElementById('modalImg').src = saved[modalIdx].url;
+        }
+        document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+
+        // ============================================================
+        // 启动：应用记忆 + 渲染
+        // ============================================================
+        buildTheme();
+        renderCanvas();
+        applyVP();
+        updateTxtPreview();
+    </script>
+</body>
+</html>
