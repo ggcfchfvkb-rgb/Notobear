@@ -62,7 +62,6 @@
             touch-action: pan-x pan-y;
         }
 
-        /* ★ 顶栏压缩：52px → 40px ★ */
         .topbar {
             flex-shrink: 0;
             height: 40px;
@@ -230,7 +229,6 @@
             background: transparent;
         }
 
-        /* ★ app-scroll：去掉整体滚动，改为两段 flex 布局 ★ */
         .app-scroll {
             flex: 1;
             overflow: hidden;
@@ -238,7 +236,6 @@
             flex-direction: column;
         }
 
-        /* ★ preview-sticky：占上半屏 50%，内部 flex 列，画布自适应 ★ */
         .preview-sticky {
             position: relative;
             z-index: 100;
@@ -251,7 +248,6 @@
             flex-direction: column;
             overflow: hidden;
         }
-        /* ★ 状态栏压缩 ★ */
         .status-bar {
             display: flex;
             flex-wrap: wrap;
@@ -269,7 +265,6 @@
         .status-bar b {
             color: var(--accent);
         }
-        /* ★ 工具栏压缩，不随画布缩小 ★ */
         .preview-toolbar {
             display: flex;
             gap: 5px;
@@ -329,7 +324,6 @@
             font-weight: 700;
             cursor: pointer;
         }
-        /* ★ hint 压缩，不随画布缩小 ★ */
         .preview-hint {
             text-align: center;
             font-size: 9px;
@@ -340,7 +334,6 @@
             line-height: 1.2;
             flex-shrink: 0;
         }
-        /* ★ canvas-wrap：flex:1 自适应填满剩余预览区 ★ */
         .canvas-wrap {
             display: flex;
             align-items: center;
@@ -430,7 +423,6 @@
             color: var(--accent);
         }
 
-        /* ★ content-cols：占下半屏 50%（flex:1 吃掉 preview-sticky 剩余空间）★ */
         .content-cols {
             display: flex;
             flex: 1;
@@ -2077,9 +2069,10 @@
                 <div class="h-section">
                     <div class="h-sec-title"><span class="h-sec-icon">📐</span>Tab ① · 布局<span class="h-tag orange">基础</span></div>
                     <div class="h-items">
-                        <div class="h-item"><span class="h-item-icon">📁</span><div class="h-item-body"><div class="h-item-name">添加图片（仅在布局Tab显示）</div><div class="h-item-desc">点击区域或拖拽文件添加图片，支持 PNG/JPG/WEBP，可<b>批量添加</b>。</div></div></div>
+                        <div class="h-item"><span class="h-item-icon">📁</span><div class="h-item-body"><div class="h-item-name">添加图片</div><div class="h-item-desc">点击区域或拖拽文件添加图片，支持 PNG/JPG/WEBP，可<b>批量添加</b>。</div></div></div>
                         <div class="h-item"><span class="h-item-icon">📏</span><div class="h-item-body"><div class="h-item-name">输出比例</div><div class="h-item-desc">提供8种比例，默认为 <b>9:16</b>（竖屏短视频比例），画布会自动补边适配。</div></div></div>
                         <div class="h-item"><span class="h-item-icon">🖼</span><div class="h-item-body"><div class="h-item-name">画布设置</div><div class="h-item-desc"><b>间距</b>·<b>外边距</b>·<b>圆角</b>·<b>背景色</b>·<b>单元宽高</b> 全面控制画布细节。</div></div></div>
+                        <div class="h-item"><span class="h-item-icon">🔄</span><div class="h-item-body"><div class="h-item-name">交换图片位置</div><div class="h-item-desc">在布局Tab下方，点击选中两张图片的缩略图（先点第一张，再点第二张），点击<b>确认交换</b>即可互换它们在拼图中的位置。所有关联的水印和序号也会同步更新。</div></div></div>
                     </div>
                 </div>
                 <div class="h-divider"></div>
@@ -2119,7 +2112,8 @@
                         <div class="h-sc"><span class="h-sc-key">2×</span><span class="h-sc-desc">导出2倍清晰图</span></div>
                         <div class="h-sc"><span class="h-sc-key">50%</span><span class="h-sc-desc">默认预览缩放比例</span></div>
                     </div>
-                    <div class="h-tip" style="margin-top:10px;"><span class="h-tip-icon">⚠️</span><div class="h-tip-text"><b>草稿层</b>只在预览中可见，<b>不会出现在任何导出或保存的图片里</b>，确认添加后才正式渲染。</div></div>
+                    <div class="h-tip" style="margin-top:10px;"><span class="h-tip-icon">📦</span><div class="h-tip-text"><b>导入多张图片一键批量拼图</b>：点击「添加图片」区域的 <b>📥 导入多张图片一键批量拼图</b> 按钮，系统会自动根据当前的行列数和序号设置，将所有图片按顺序分组，<b>批量生成多张拼图</b>并直接保存到右侧「已保存预览」列表中。每组的序号会连续递增（如第1组1~4，第2组5~8），方便您一次性完成大批量图片的拼图制作与预览。</div></div>
+                    <div class="h-tip"><span class="h-tip-icon">⚠️</span><div class="h-tip-text"><b>草稿层</b>只在预览中可见，<b>不会出现在任何导出或保存的图片里</b>，确认添加后才正式渲染。</div></div>
                 </div>
                 <div class="h-divider"></div>
                 <div style="text-align:center;padding:8px 0 4px;">
@@ -2189,7 +2183,8 @@
                                 <input type="file" id="fileInput" multiple accept="image/*" style="display:none">
                             </div>
                             <div class="img-list" id="imgList"></div>
-                            <button class="btn br" onclick="clearAll()">🗑 清空所有</button>
+                            <button class="btn by" onclick="applyCurrentAndSave()" style="margin-top:6px; font-size:11px;">📥 导入多张图片一键批量拼图</button>
+                            <button class="btn br" onclick="clearAll()" style="margin-top:4px;">🗑 清空所有</button>
                         </div>
                     </div>
                     <div class="divider"></div>
@@ -2247,6 +2242,14 @@
                                 <div class="slider-range-row"><span>100px</span><span class="slider-tip"></span><span>800px</span></div>
                             </div>
                         </div>
+
+                        <div class="sec-title" onclick="togSec(this)" style="margin-top:6px"><span>🔄 交换图片位置</span><span class="arrow">▾</span></div>
+                        <div class="sec-body">
+                            <p style="font-size:10px;color:var(--text2);font-weight:700;margin-bottom:6px;">点击选中两张图片（先点第一张，再点第二张）即可自动交换位置</p>
+                            <div id="swapGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(48px,1fr));gap:5px;margin-bottom:8px;"></div>
+                            <button class="btn bt" onclick="executeSwap()" style="font-size:11px;">✅ 确认交换</button>
+                            <button class="btn br" onclick="clearSwapSelection()" style="font-size:11px;margin-top:4px;">✕ 取消选择</button>
+                        </div>
                     </div>
 
                     <!-- 序号 -->
@@ -2260,7 +2263,6 @@
                                 <div class="nsopt" onclick="setNS('border-rect',this)"><div class="nsdemo" style="border:2.5px solid #795548;color:#795548;border-radius:3px">1</div>方框</div>
                                 <div class="nsopt" onclick="setNS('plain',this)"><div class="nsdemo" style="color:#795548">1</div>纯数</div>
                             </div>
-                            <!-- ★ 新增：文字描边选项 -->
                             <div class="r2">
                                 <div class="form-group"><label class="chk"><input type="checkbox" id="numStroke" onchange="renderCanvas()">✏️ 文字描边</label></div>
                                 <div class="form-group"><label>描边颜色</label><input type="color" id="numStrokeColor" value="#ffffff" oninput="renderCanvas()"></div>
@@ -2537,29 +2539,9 @@
         </div>
     </div>
 
-    <!-- 引入 JSZip 库用于打包下载 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // ============================================================
-        //  ★ 主题记忆：从 localStorage 读取/保存
-        // ============================================================
-        function loadThemePref() {
-            try {
-                var theme = localStorage.getItem('bear_theme') || 'light';
-                var idx = parseInt(localStorage.getItem('bear_schemeIdx')) || 8;
-                var custom = localStorage.getItem('bear_customAccent') || null;
-                return { theme: theme, schemeIdx: idx, customAccent: custom };
-            } catch (e) { return { theme: 'light', schemeIdx: 8, customAccent: null }; }
-        }
-
-        function saveThemePref(theme, idx, custom) {
-            try {
-                if (theme) localStorage.setItem('bear_theme', theme);
-                if (idx !== undefined) localStorage.setItem('bear_schemeIdx', String(idx));
-                if (custom) localStorage.setItem('bear_customAccent', custom);
-            } catch (e) {}
-        }
-        // ============================================================
+        // 主题记忆功能已移除
 
         function openHelp() { document.getElementById('helpModal').classList.add('show'); }
 
@@ -2679,11 +2661,10 @@
         function h2r(h) { return { r: parseInt(h.slice(1, 3), 16), g: parseInt(h.slice(3, 5), 16), b: parseInt(h.slice(5, 7),
                 16) }; }
 
-        // ★ 修改 buildTheme：读取 localStorage 并应用
         function buildTheme() {
-            var pref = loadThemePref();
-            isDark = (pref.theme === 'dark');
-            schemeIdx = pref.schemeIdx;
+            // 默认使用棕色 (schemeIdx = 8)
+            isDark = false;
+            schemeIdx = 8;
             var sd = document.getElementById('schemeDots');
             schemes.forEach(function(s, i) {
                 var d = document.createElement('div');
@@ -2693,12 +2674,10 @@
                 d.onclick = function() { applyScheme(i, d); };
                 sd.appendChild(d);
             });
-            // 应用主题模式
             document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
             document.getElementById('lBtn').classList.toggle('active', !isDark);
             document.getElementById('dBtn').classList.toggle('active', isDark);
             document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
-            // 应用配色方案
             var s = schemes[schemeIdx],
                 accent = isDark ? s.da : s.la,
                 bg = isDark ? s.db : s.lb,
@@ -2709,12 +2688,6 @@
             document.documentElement.style.setProperty('--topbar-a', ta);
             document.documentElement.style.setProperty('--topbar-b', tb);
             document.getElementById('customAccent').value = accent;
-            // 如果有自定义主色，应用它
-            if (pref.customAccent) {
-                applyCustom(pref.customAccent);
-                document.getElementById('customAccent').value = pref.customAccent;
-            }
-            // 高亮对应的 dot
             document.querySelectorAll('.cdot').forEach(function(el, i) {
                 el.classList.toggle('active', i === schemeIdx);
             });
@@ -2734,8 +2707,6 @@
             document.documentElement.style.setProperty('--topbar-a', ta);
             document.documentElement.style.setProperty('--topbar-b', tb);
             document.getElementById('customAccent').value = accent;
-            // ★ 保存到 localStorage
-            saveThemePref(isDark ? 'dark' : 'light', i, null);
         }
 
         function setAccentVars(hex) {
@@ -2752,8 +2723,6 @@
             var li = 'rgb(' + Math.min(255, c.r + 50) + ',' + Math.min(255, c.g + 50) + ',' + Math.min(255, c.b + 50) + ')';
             document.documentElement.style.setProperty('--topbar-a', hex);
             document.documentElement.style.setProperty('--topbar-b', li);
-            // ★ 保存到 localStorage
-            saveThemePref(isDark ? 'dark' : 'light', schemeIdx, hex);
         }
 
         function setMode(m) {
@@ -2763,8 +2732,6 @@
             document.getElementById('dBtn').classList.toggle('active', isDark);
             document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
             applyScheme(schemeIdx, document.querySelectorAll('.cdot')[schemeIdx]);
-            // ★ 保存 theme
-            saveThemePref(m, schemeIdx, document.getElementById('customAccent').value);
         }
 
         function toggleDark() { setMode(isDark ? 'light' : 'dark'); }
@@ -2875,6 +2842,7 @@
             document.getElementById('imgCount').textContent = imgs.length;
             updateRange();
             refreshPhotoPicker();
+            initSwapGrid();
         }
 
         function rmImg(i) {
@@ -3456,7 +3424,6 @@
             c.drawImage(img, sx, sy, sw, sh, x, y, w, h);
         }
 
-        // ★ 修改 drawNum：修复纯数字颜色控制，并增加文字描边支持
         function drawNum(c, num, style, pos, x, y, w, h, size, color, bgcol, bdw) {
             var r = size * 0.75,
                 mg = 10,
@@ -3513,7 +3480,6 @@
                 c.lineWidth = size / 6;
                 c.strokeText(String(num), cx, cy);
             }
-            // 修复：数字颜色始终由 color 参数控制，背景/边框由 bgcol 控制
             c.fillStyle = color;
             c.fillText(String(num), cx, cy);
             c.restore();
@@ -3665,6 +3631,147 @@
             document.getElementById('globalNext').textContent = gNext;
             document.getElementById('nextDisp').textContent = gNext; }
 
+        var swapSrc = null,
+            swapDst = null;
+
+        function initSwapGrid() {
+            var grid = document.getElementById('swapGrid');
+            if (imgs.length < 2) {
+                grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text2);font-size:10px;font-weight:700;padding:8px;">至少需要2张图片才能交换</div>';
+                return;
+            }
+            var sn = +document.getElementById('startNum').value;
+            grid.innerHTML = imgs.map(function(im, i) {
+                var isSrc = (swapSrc === i);
+                var isDst = (swapDst === i);
+                var cls = 'sw-cell';
+                if (isSrc) cls += ' src-sel';
+                if (isDst) cls += ' dst-sel';
+                return '<div class="sw-cell" data-idx="' + i +
+                    '" style="position:relative;aspect-ratio:1;border-radius:6px;overflow:hidden;cursor:pointer;border:3px solid ' +
+                    (isSrc ? '#ff5252' : isDst ? '#56c264' : 'var(--border)') +
+                    ';background:var(--bg2);" onclick="handleSwapClick(' + i + ')">' +
+                    '<img src="' + im.src + '" style="width:100%;height:100%;object-fit:cover;display:block;">' +
+                    '<div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,0.6);color:#fff;font-size:9px;font-weight:900;padding:1px 4px;border-radius:4px;">' +
+                    (sn + i) + '</div>' +
+                    (isSrc ? '<div style="position:absolute;inset:0;background:rgba(255,82,82,0.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;pointer-events:none;">①</div>' :
+                        '') +
+                    (isDst ? '<div style="position:absolute;inset:0;background:rgba(86,194,100,0.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:900;color:#fff;pointer-events:none;">②</div>' :
+                        '') +
+                    '</div>';
+            }).join('');
+            var style = document.getElementById('swapStyle');
+            if (!style) {
+                style = document.createElement('style');
+                style.id = 'swapStyle';
+                document.head.appendChild(style);
+            }
+            style.textContent = '.sw-cell.src-sel{border-color:#ff5252 !important;}.sw-cell.dst-sel{border-color:#56c264 !important;}';
+        }
+
+        function handleSwapClick(idx) {
+            if (imgs.length < 2) return;
+            if (swapSrc === null) {
+                swapSrc = idx;
+                initSwapGrid();
+                return;
+            }
+            if (swapSrc === idx) {
+                swapSrc = null;
+                swapDst = null;
+                initSwapGrid();
+                return;
+            }
+            if (swapDst === null) {
+                swapDst = idx;
+                initSwapGrid();
+                executeSwap();
+            }
+        }
+
+        function executeSwap() {
+            if (swapSrc === null || swapDst === null || swapSrc === swapDst || imgs.length < 2) {
+                clearSwapSelection();
+                return;
+            }
+            var a = swapSrc,
+                b = swapDst;
+            var temp = imgs[a];
+            imgs[a] = imgs[b];
+            imgs[b] = temp;
+
+            for (var wi = 0; wi < perPhotoWMs.length; wi++) {
+                var wm = perPhotoWMs[wi];
+                var newTargets = [];
+                for (var ti = 0; ti < wm.targets.length; ti++) {
+                    var t = wm.targets[ti];
+                    if (t === a) newTargets.push(b);
+                    else if (t === b) newTargets.push(a);
+                    else newTargets.push(t);
+                }
+                wm.targets = newTargets;
+            }
+
+            var newSet = new Set();
+            ppwmDraftTargets.forEach(function(t) {
+                if (t === a) newSet.add(b);
+                else if (t === b) newSet.add(a);
+                else newSet.add(t);
+            });
+            ppwmDraftTargets = newSet;
+
+            clearSwapSelection();
+            refreshImgs();
+            refreshPhotoPicker();
+            renderCanvas();
+        }
+
+        function clearSwapSelection() {
+            swapSrc = null;
+            swapDst = null;
+            initSwapGrid();
+        }
+
+        // ★ 批量拼图：同步应用所有当前设置（包括水印、文字、草稿等）
+        function applyCurrentAndSave() {
+            if (imgs.length === 0) {
+                alert('🐻 请先添加图片~');
+                return;
+            }
+            var perPage = gRows * gCols;
+            if (perPage === 0) perPage = 1;
+            var total = imgs.length;
+            var originalStart = +document.getElementById('startNum').value;
+            var currentSn = originalStart;
+            var startIdx = 0;
+            var page = 1;
+            while (startIdx < total) {
+                var endIdx = Math.min(startIdx + perPage, total);
+                var pageImgs = imgs.slice(startIdx, endIdx);
+                var tempCanvas = document.createElement('canvas');
+                var tempCtx = tempCanvas.getContext('2d');
+                var origImgs = imgs;
+                imgs = pageImgs;
+                document.getElementById('startNum').value = currentSn;
+                // ★ 关键：启用草稿渲染，让水印、文字等所有当前设置同步到每一张图
+                renderToCtx(tempCtx, 1, true);
+                imgs = origImgs;
+                var rangeStr = currentSn + '~' + (currentSn + pageImgs.length - 1);
+                saved.push({
+                    url: tempCanvas.toDataURL('image/png'),
+                    range: rangeStr,
+                    cnt: pageImgs.length,
+                    ts: Date.now() + page
+                });
+                currentSn += pageImgs.length;
+                startIdx += perPage;
+                page++;
+            }
+            document.getElementById('startNum').value = originalStart;
+            refreshSaved();
+            renderCanvas();
+        }
+
         function saveAndContinue() {
             if (imgs.length === 0) { alert('🐻 请先添加图片~'); return; }
             var sn = +document.getElementById('startNum').value,
@@ -3704,12 +3811,37 @@
             }).join('');
         }
 
-        function delSaved(i) { saved.splice(i, 1);
-            refreshSaved(); }
+        function recalcNext() {
+            if (saved.length === 0) {
+                gNext = 1;
+            } else {
+                var maxEnd = 0;
+                for (var i = 0; i < saved.length; i++) {
+                    var parts = saved[i].range.split('~');
+                    var end = parseInt(parts[1]);
+                    if (end > maxEnd) maxEnd = end;
+                }
+                gNext = maxEnd + 1;
+            }
+            document.getElementById('startNum').value = gNext;
+            document.getElementById('globalNext').textContent = gNext;
+            document.getElementById('nextDisp').textContent = gNext;
+            renderCanvas();
+        }
 
-        function clearSaved() { if (!saved.length) return; if (!confirm('确定清空？')) return;
+        function delSaved(i) {
+            saved.splice(i, 1);
+            refreshSaved();
+            recalcNext();
+        }
+
+        function clearSaved() {
+            if (!saved.length) return;
+            if (!confirm('确定清空？')) return;
             saved = [];
-            refreshSaved(); }
+            refreshSaved();
+            recalcNext();
+        }
 
         function resetCtr() { gNext = 1;
             document.getElementById('startNum').value = 1;
@@ -3736,7 +3868,6 @@
             a.click();
         }
 
-        // ★ 修改：全部下载改为打包成ZIP压缩包
         async function dlAll() {
             if (!saved.length) { alert('没有已保存预览'); return; }
             var zip = new JSZip();
@@ -3785,13 +3916,11 @@
         }
         document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
-        // ============================================================
-        // 启动：应用记忆 + 渲染
-        // ============================================================
         buildTheme();
         renderCanvas();
         applyVP();
         updateTxtPreview();
+        initSwapGrid();
     </script>
 </body>
 </html>
