@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>熊啊熊啊熊拼图</title>
     <style>
+        /* 固定棕色主题，移除美化变量 */
         :root {
             --bg: #ffffff;
             --bg2: #f8f8f8;
@@ -22,24 +23,6 @@
             --scrollbar: #c09070;
             --glass-bg: rgba(255, 255, 255, 0.55);
             --glass-border: rgba(255, 255, 255, 0.7);
-        }
-        [data-theme="dark"] {
-            --bg: #1a0d08;
-            --bg2: #2a1a0a;
-            --panel: #2e1e0e;
-            --border: #5c3a18;
-            --border2: #3e2810;
-            --text: #ffdbb0;
-            --text2: #c89060;
-            --accent: #c09070;
-            --accent2: #d4a880;
-            --accent-light: rgba(192, 144, 112, 0.15);
-            --topbar-a: #4e342e;
-            --topbar-b: #795548;
-            --shadow: rgba(0, 0, 0, 0.45);
-            --scrollbar: #5c3a18;
-            --glass-bg: rgba(30, 13, 8, 0.65);
-            --glass-border: rgba(192, 144, 112, 0.3);
         }
         * {
             margin: 0;
@@ -129,104 +112,6 @@
         .icon-btn:hover {
             background: rgba(255, 255, 255, 0.38);
             transform: scale(1.1);
-        }
-
-        .theme-popup {
-            position: fixed;
-            top: 46px;
-            right: 12px;
-            z-index: 500;
-            width: 272px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1.5px solid var(--glass-border);
-            border-radius: 18px;
-            padding: 16px;
-            box-shadow: 0 8px 32px var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            display: none;
-        }
-        .theme-popup.open {
-            display: block;
-        }
-        .theme-popup h4 {
-            color: var(--accent);
-            font-size: 13px;
-            font-weight: 800;
-            margin-bottom: 11px;
-        }
-        .mode-btns {
-            display: flex;
-            gap: 7px;
-            margin-bottom: 12px;
-        }
-        .mode-btn {
-            flex: 1;
-            padding: 7px;
-            background: rgba(255, 255, 255, 0.3);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1.5px solid var(--glass-border);
-            border-radius: 9px;
-            color: var(--text);
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 700;
-            text-align: center;
-            transition: all 0.18s;
-        }
-        .mode-btn.active {
-            border-color: var(--accent);
-            background: rgba(121, 85, 72, 0.25);
-            color: var(--accent);
-        }
-        .tp-label {
-            font-size: 11px;
-            color: var(--text2);
-            font-weight: 700;
-            margin-bottom: 6px;
-            display: block;
-        }
-        .dot-row {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 5px;
-            margin-bottom: 10px;
-        }
-        .cdot {
-            aspect-ratio: 1;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.15s;
-        }
-        .cdot:hover {
-            transform: scale(1.15);
-        }
-        .cdot.active {
-            border-color: var(--text);
-            transform: scale(1.18);
-        }
-        .custom-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-        .custom-row label {
-            font-size: 11px;
-            color: var(--text2);
-            font-weight: 700;
-            flex: 1;
-        }
-        .custom-row input[type=color] {
-            width: 36px;
-            height: 26px;
-            border: 1.5px solid var(--glass-border);
-            border-radius: 6px;
-            cursor: pointer;
-            padding: 1px;
-            background: transparent;
         }
 
         .app-scroll {
@@ -1921,6 +1806,7 @@
         [data-theme="dark"] .h-tip {
             background: rgba(192, 140, 40, 0.1);
             border-color: #7a5010;
+            color: #d4a060;
         }
         .h-tip-icon {
             font-size: 14px;
@@ -2011,21 +1897,7 @@
         </div>
         <div class="topbar-actions">
             <button class="icon-btn" onclick="openHelp()" title="使用教程">📖</button>
-            <button class="icon-btn" onclick="togglePopup()" title="主题">🎨</button>
-            <button class="icon-btn" id="darkBtn" onclick="toggleDark()" title="日夜">🌙</button>
-        </div>
-        <div class="theme-popup" id="themePopup">
-            <h4>🎨 界面美化</h4>
-            <div class="mode-btns">
-                <div class="mode-btn active" id="lBtn" onclick="setMode('light')">☀️ 日间</div>
-                <div class="mode-btn" id="dBtn" onclick="setMode('dark')">🌙 夜间</div>
-            </div>
-            <span class="tp-label">🌈 配色方案</span>
-            <div class="dot-row" id="schemeDots"></div>
-            <div class="custom-row">
-                <label>自定义主色</label>
-                <input type="color" id="customAccent" value="#795548" oninput="applyCustom(this.value)">
-            </div>
+            <!-- 美化相关按钮已移除 -->
         </div>
     </div>
 
@@ -2645,104 +2517,9 @@
             document.getElementById('txtSzN').value = v; var r = document.getElementById('txtSzR');
             r.value = Math.min(Math.max(+v, +r.min), +r.max); }
 
-        var schemes = [
-            { n: '暖橙', la: '#ff8c42', lb: '#ffffff', ta: '#ff8c42', tb: '#ffb347', da: '#ff9a55', db: '#1e1208' },
-            { n: '粉红', la: '#ff6b9d', lb: '#ffffff', ta: '#ff6b9d', tb: '#ff9ec8', da: '#ff90b8', db: '#200010' },
-            { n: '天蓝', la: '#1565c0', lb: '#ffffff', ta: '#1565c0', tb: '#42a5f5', da: '#42a5f5', db: '#0d1b2a' },
-            { n: '草绿', la: '#2e9a3f', lb: '#ffffff', ta: '#2e9a3f', tb: '#7dd87a', da: '#66cc77', db: '#0a1f0a' },
-            { n: '嫩紫', la: '#8b44d4', lb: '#ffffff', ta: '#8b44d4', tb: '#b98fff', da: '#bb88ff', db: '#180a2e' },
-            { n: '青色', la: '#00897b', lb: '#ffffff', ta: '#00897b', tb: '#40d8c0', da: '#40d8c0', db: '#001f1d' },
-            { n: '玫红', la: '#e91e63', lb: '#ffffff', ta: '#e91e63', tb: '#ff6b9d', da: '#f06292', db: '#200010' },
-            { n: '靛蓝', la: '#3949ab', lb: '#ffffff', ta: '#3949ab', tb: '#8090ee', da: '#8090ee', db: '#0a0d20' },
-            { n: '棕色', la: '#795548', lb: '#ffffff', ta: '#795548', tb: '#c09070', da: '#c09070', db: '#1a0d08' },
-            { n: '柠黄', la: '#f9a825', lb: '#ffffff', ta: '#f9a825', tb: '#ffe070', da: '#ffd060', db: '#1f1800' },
-        ];
-
-        function h2r(h) { return { r: parseInt(h.slice(1, 3), 16), g: parseInt(h.slice(3, 5), 16), b: parseInt(h.slice(5, 7),
-                16) }; }
-
         function buildTheme() {
-            // 默认使用棕色 (schemeIdx = 8)
-            isDark = false;
-            schemeIdx = 8;
-            var sd = document.getElementById('schemeDots');
-            schemes.forEach(function(s, i) {
-                var d = document.createElement('div');
-                d.className = 'cdot' + (i === schemeIdx ? ' active' : '');
-                d.style.background = 'linear-gradient(135deg,' + s.ta + ' 50%,' + s.la + ' 50%)';
-                d.title = s.n;
-                d.onclick = function() { applyScheme(i, d); };
-                sd.appendChild(d);
-            });
-            document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
-            document.getElementById('lBtn').classList.toggle('active', !isDark);
-            document.getElementById('dBtn').classList.toggle('active', isDark);
-            document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
-            var s = schemes[schemeIdx],
-                accent = isDark ? s.da : s.la,
-                bg = isDark ? s.db : s.lb,
-                ta = isDark ? s.da : s.ta,
-                tb = isDark ? s.db : s.tb;
-            setAccentVars(accent);
-            document.documentElement.style.setProperty('--bg', bg);
-            document.documentElement.style.setProperty('--topbar-a', ta);
-            document.documentElement.style.setProperty('--topbar-b', tb);
-            document.getElementById('customAccent').value = accent;
-            document.querySelectorAll('.cdot').forEach(function(el, i) {
-                el.classList.toggle('active', i === schemeIdx);
-            });
+            // 固定棕色主题，无需额外设置
         }
-
-        function applyScheme(i, el) {
-            schemeIdx = i;
-            document.querySelectorAll('.cdot').forEach(function(x) { x.classList.remove('active'); });
-            el.classList.add('active');
-            var s = schemes[i],
-                accent = isDark ? s.da : s.la,
-                bg = isDark ? s.db : s.lb,
-                ta = isDark ? s.da : s.ta,
-                tb = isDark ? s.db : s.tb;
-            setAccentVars(accent);
-            document.documentElement.style.setProperty('--bg', bg);
-            document.documentElement.style.setProperty('--topbar-a', ta);
-            document.documentElement.style.setProperty('--topbar-b', tb);
-            document.getElementById('customAccent').value = accent;
-        }
-
-        function setAccentVars(hex) {
-            document.documentElement.style.setProperty('--accent', hex);
-            document.documentElement.style.setProperty('--accent2', hex);
-            var c = h2r(hex);
-            document.documentElement.style.setProperty('--accent-light', 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.13)');
-            document.documentElement.style.setProperty('--border', 'rgba(' + c.r + ',' + c.g + ',' + c.b + ',0.5)');
-        }
-
-        function applyCustom(hex) {
-            setAccentVars(hex);
-            var c = h2r(hex);
-            var li = 'rgb(' + Math.min(255, c.r + 50) + ',' + Math.min(255, c.g + 50) + ',' + Math.min(255, c.b + 50) + ')';
-            document.documentElement.style.setProperty('--topbar-a', hex);
-            document.documentElement.style.setProperty('--topbar-b', li);
-        }
-
-        function setMode(m) {
-            isDark = (m === 'dark');
-            document.documentElement.setAttribute('data-theme', m);
-            document.getElementById('lBtn').classList.toggle('active', !isDark);
-            document.getElementById('dBtn').classList.toggle('active', isDark);
-            document.getElementById('darkBtn').textContent = isDark ? '☀️' : '🌙';
-            applyScheme(schemeIdx, document.querySelectorAll('.cdot')[schemeIdx]);
-        }
-
-        function toggleDark() { setMode(isDark ? 'light' : 'dark'); }
-
-        function togglePopup() { document.getElementById('themePopup').classList.toggle('open'); }
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.theme-popup') && !e.target.closest('.icon-btn')) document.getElementById('themePopup')
-                .classList.remove('open');
-        });
-
-        function togSec(t) { t.classList.toggle('collapsed'); var b = t.nextElementSibling; if (b) b.classList.toggle('hide'); }
 
         function switchTab(name, btn) {
             document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('on'); });
@@ -2816,22 +2593,67 @@
         fi.addEventListener('change', function(e) { handleFiles(e.target.files);
             fi.value = ''; });
 
+        // 按文件顺序加载，保持用户选择的顺序
         function handleFiles(files) {
-            Array.from(files).forEach(function(f) {
-                if (!f.type.startsWith('image/')) return;
-                var r = new FileReader();
-                r.onload = function(ev) {
+            var fileArray = Array.from(files);
+            var total = fileArray.length;
+            var loaded = 0;
+            var hasImages = false;
+            var isBatch = total > 10;
+
+            async function loadFilesSequentially() {
+                for (var i = 0; i < fileArray.length; i++) {
+                    var f = fileArray[i];
+                    if (!f.type.startsWith('image/')) {
+                        loaded++;
+                        if (loaded === total && isBatch) {
+                            if (_batchTimer) clearTimeout(_batchTimer);
+                            _batchTimer = setTimeout(function() {
+                                refreshImgs();
+                                renderCanvas();
+                                _batchTimer = null;
+                            }, 100);
+                        }
+                        continue;
+                    }
+                    hasImages = true;
+                    var dataUrl = await new Promise(function(resolve, reject) {
+                        var r = new FileReader();
+                        r.onload = function(ev) { resolve(ev.target.result); };
+                        r.onerror = function() { reject(r.error); };
+                        r.readAsDataURL(f);
+                    });
                     var img = new Image();
-                    img.onload = function() {
-                        imgs.push({ el: img, name: f.name, src: ev.target.result });
+                    await new Promise(function(resolve, reject) {
+                        img.onload = resolve;
+                        img.onerror = reject;
+                        img.src = dataUrl;
+                    });
+                    imgs.push({ el: img, name: f.name, src: dataUrl });
+                    loaded++;
+                    if (loaded === total) {
+                        if (isBatch) {
+                            if (_batchTimer) clearTimeout(_batchTimer);
+                            _batchTimer = setTimeout(function() {
+                                refreshImgs();
+                                renderCanvas();
+                                _batchTimer = null;
+                            }, 200);
+                        } else {
+                            refreshImgs();
+                            renderCanvas();
+                        }
+                    } else if (!isBatch) {
                         refreshImgs();
                         renderCanvas();
-                    };
-                    img.src = ev.target.result;
-                };
-                r.readAsDataURL(f);
-            });
+                    }
+                }
+            }
+
+            loadFilesSequentially();
         }
+
+        var _batchTimer = null;
 
         function refreshImgs() {
             var sn = +document.getElementById('startNum').value;
@@ -3732,7 +3554,7 @@
             initSwapGrid();
         }
 
-        // ★ 批量拼图：同步应用所有当前设置（包括水印、文字、草稿等）
+        // 批量拼图：异步分批处理，避免卡顿
         function applyCurrentAndSave() {
             if (imgs.length === 0) {
                 alert('🐻 请先添加图片~');
@@ -3745,7 +3567,26 @@
             var currentSn = originalStart;
             var startIdx = 0;
             var page = 1;
-            while (startIdx < total) {
+            var results = [];
+
+            // 显示处理状态（可选）
+            var statusMsg = document.getElementById('imgCount');
+            var originalText = statusMsg.textContent;
+
+            function processNextBatch() {
+                if (startIdx >= total) {
+                    // 所有批次处理完成，一次性保存所有结果
+                    for (var i = 0; i < results.length; i++) {
+                        saved.push(results[i]);
+                    }
+                    document.getElementById('startNum').value = originalStart;
+                    refreshSaved();
+                    renderCanvas();
+                    // 恢复状态显示
+                    statusMsg.textContent = originalText;
+                    return;
+                }
+
                 var endIdx = Math.min(startIdx + perPage, total);
                 var pageImgs = imgs.slice(startIdx, endIdx);
                 var tempCanvas = document.createElement('canvas');
@@ -3753,23 +3594,30 @@
                 var origImgs = imgs;
                 imgs = pageImgs;
                 document.getElementById('startNum').value = currentSn;
-                // ★ 关键：启用草稿渲染，让水印、文字等所有当前设置同步到每一张图
                 renderToCtx(tempCtx, 1, true);
                 imgs = origImgs;
+
                 var rangeStr = currentSn + '~' + (currentSn + pageImgs.length - 1);
-                saved.push({
+                results.push({
                     url: tempCanvas.toDataURL('image/png'),
                     range: rangeStr,
                     cnt: pageImgs.length,
                     ts: Date.now() + page
                 });
+
                 currentSn += pageImgs.length;
                 startIdx += perPage;
                 page++;
+
+                // 更新状态显示
+                statusMsg.textContent = '处理中 ' + Math.min(startIdx, total) + '/' + total + ' 张';
+
+                // 使用 setTimeout 让主线程有机会处理UI事件，避免卡顿
+                setTimeout(processNextBatch, 50);
             }
-            document.getElementById('startNum').value = originalStart;
-            refreshSaved();
-            renderCanvas();
+
+            // 开始异步处理
+            processNextBatch();
         }
 
         function saveAndContinue() {
