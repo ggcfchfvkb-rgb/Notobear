@@ -2252,13 +2252,13 @@
                             </div>
                             <div class="step-label"><span class="step-num">3</span>调整水印参数 <span class="live-badge">● LIVE</span></div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">🌫 水印透明度</span><input type="number" id="ppwmAN" class="slider-num" value="60" min="1" max="100" oninput="syncNS('ppwmAN','ppwmA');updatePPWMDraft()"></div>
-                                <input type="range" id="ppwmA" class="slider-track" min="1" max="100" value="60" oninput="syncSR('ppwmA','ppwmAN');updatePPWMDraft()">
+                                <div class="slider-label-row"><span class="slabel">🌫 水印透明度</span><input type="number" id="ppwmAN" class="slider-num" value="100" min="1" max="100" oninput="syncNS('ppwmAN','ppwmA');updatePPWMDraft()"></div>
+                                <input type="range" id="ppwmA" class="slider-track" min="1" max="100" value="100" oninput="syncSR('ppwmA','ppwmAN');updatePPWMDraft()">
                                 <div class="slider-range-row"><span>1% 透明</span><span class="slider-tip"></span><span>100% 不透明</span></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">📏 水印大小</span><input type="number" id="ppwmSzN" class="slider-num" value="50" min="1" max="100" oninput="syncNS('ppwmSzN','ppwmSz');updatePPWMDraft()"></div>
-                                <input type="range" id="ppwmSz" class="slider-track" min="1" max="100" value="50" oninput="syncSR('ppwmSz','ppwmSzN');updatePPWMDraft()">
+                                <div class="slider-label-row"><span class="slabel">📏 水印大小</span><input type="number" id="ppwmSzN" class="slider-num" value="100" min="1" max="100" oninput="syncNS('ppwmSzN','ppwmSz');updatePPWMDraft()"></div>
+                                <input type="range" id="ppwmSz" class="slider-track" min="1" max="100" value="100" oninput="syncSR('ppwmSz','ppwmSzN');updatePPWMDraft()">
                                 <div class="slider-range-row"><span>1% 极小</span><span class="slider-tip"></span><span>100% 铺满</span></div>
                             </div>
                             <div class="r2">
@@ -3115,8 +3115,11 @@
 
         function drawWMOnRect(c, wm, x, y, w, h, alpha, blend, sp, pos) {
             if (!wm) return;
-            var sc = Math.min(w * sp / wm.width, h * sp / wm.height),
-                dw = wm.width * sc,
+            // 启用高质量图像平滑
+            c.imageSmoothingEnabled = true;
+            c.imageSmoothingQuality = 'high';
+            var sc = Math.min(w * sp / wm.width, h * sp / wm.height);
+            var dw = wm.width * sc,
                 dh = wm.height * sc;
             c.save();
             c.globalAlpha = alpha;
@@ -3152,6 +3155,9 @@
         function renderToCtx(c, scale, withDraft) {
             scale = scale || 1;
             withDraft = (withDraft !== false);
+            // 启用高质量图像平滑
+            c.imageSmoothingEnabled = true;
+            c.imageSmoothingQuality = 'high';
             if (imgs.length === 0) {
                 c.canvas.width = 800;
                 c.canvas.height = 600;
