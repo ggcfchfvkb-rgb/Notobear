@@ -512,7 +512,7 @@
             flex: 1;
         }
 
-        /* ★ 重置按钮样式 */
+        /* ★ 重置按钮样式 — 移到滑块上方 (slabel 左侧) */
         .reset-btn {
             width: 22px;
             height: 22px;
@@ -530,6 +530,7 @@
             transition: all 0.15s;
             line-height: 1;
             padding: 0;
+            margin-right: 4px;
         }
         .reset-btn:hover {
             background: var(--accent);
@@ -2075,29 +2076,50 @@
                         </div>
                         <div class="sec-title" onclick="togSec(this)" style="margin-top:6px"><span>🖼 画布设置</span><span class="arrow">▾</span></div>
                         <div class="sec-body">
+                            <!-- ★ 所有重置按钮已移至 slabel 左侧 -->
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">📐 图片间距</span><input type="number" id="gapN" class="slider-num" value="0" min="0" oninput="syncNS('gapN','gap');renderCanvas()"><button class="reset-btn" onclick="resetSlider('gap',0)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('gap',0)">↺</button>
+                                    <span class="slabel">📐 图片间距</span>
+                                    <input type="number" id="gapN" class="slider-num" value="0" min="0" oninput="syncNS('gapN','gap');renderCanvas()">
+                                </div>
                                 <input type="range" id="gap" class="slider-track" min="0" max="100" value="0" oninput="syncSR('gap','gapN');renderCanvas()">
                                 <div class="slider-range-row"><span>0px</span><span class="slider-tip"></span><span>100px</span></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">🔲 外边距</span><input type="number" id="padN" class="slider-num" value="0" min="0" oninput="syncNS('padN','pad');renderCanvas()"><button class="reset-btn" onclick="resetSlider('pad',0)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('pad',0)">↺</button>
+                                    <span class="slabel">🔲 外边距</span>
+                                    <input type="number" id="padN" class="slider-num" value="0" min="0" oninput="syncNS('padN','pad');renderCanvas()">
+                                </div>
                                 <input type="range" id="pad" class="slider-track" min="0" max="100" value="0" oninput="syncSR('pad','padN');renderCanvas()">
                                 <div class="slider-range-row"><span>0px</span><span class="slider-tip"></span><span>100px</span></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">⭕ 圆角</span><input type="number" id="radN" class="slider-num" value="0" min="0" oninput="syncNS('radN','rad');renderCanvas()"><button class="reset-btn" onclick="resetSlider('rad',0)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('rad',0)">↺</button>
+                                    <span class="slabel">⭕ 圆角</span>
+                                    <input type="number" id="radN" class="slider-num" value="0" min="0" oninput="syncNS('radN','rad');renderCanvas()">
+                                </div>
                                 <input type="range" id="rad" class="slider-track" min="0" max="100" value="0" oninput="syncSR('rad','radN');renderCanvas()">
                                 <div class="slider-range-row"><span>0px</span><span class="slider-tip"></span><span>100px</span></div>
                             </div>
                             <div class="form-group"><label>🎨 背景颜色</label><input type="color" id="bgColor" value="#ffffff" oninput="renderCanvas()"></div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">↔ 单元宽</span><input type="number" id="cwN" class="slider-num" value="360" min="1" oninput="syncNS('cwN','cw');renderCanvas()"><button class="reset-btn" onclick="resetSlider('cw',360)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('cw',360)">↺</button>
+                                    <span class="slabel">↔ 单元宽</span>
+                                    <input type="number" id="cwN" class="slider-num" value="360" min="1" oninput="syncNS('cwN','cw');renderCanvas()">
+                                </div>
                                 <input type="range" id="cw" class="slider-track" min="100" max="800" value="360" oninput="syncSR('cw','cwN');renderCanvas()">
                                 <div class="slider-range-row"><span>100px</span><span class="slider-tip"></span><span>800px</span></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">↕ 单元高</span><input type="number" id="chN" class="slider-num" value="270" min="1" oninput="syncNS('chN','ch');renderCanvas()"><button class="reset-btn" onclick="resetSlider('ch',270)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('ch',270)">↺</button>
+                                    <span class="slabel">↕ 单元高</span>
+                                    <input type="number" id="chN" class="slider-num" value="270" min="1" oninput="syncNS('chN','ch');renderCanvas()">
+                                </div>
                                 <input type="range" id="ch" class="slider-track" min="100" max="800" value="270" oninput="syncSR('ch','chN');renderCanvas()">
                                 <div class="slider-range-row"><span>100px</span><span class="slider-tip"></span><span>800px</span></div>
                             </div>
@@ -2135,7 +2157,11 @@
                             </div>
                             <div class="form-group"><label>背景/框颜色</label><input type="color" id="numBg" value="#795548" oninput="renderCanvas()"></div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">✏️ 边框粗细</span><input type="number" id="numBdN" class="slider-num" value="3" min="1" oninput="syncNS('numBdN','numBd');renderCanvas()"><button class="reset-btn" onclick="resetSlider('numBd',3)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('numBd',3)">↺</button>
+                                    <span class="slabel">✏️ 边框粗细</span>
+                                    <input type="number" id="numBdN" class="slider-num" value="3" min="1" oninput="syncNS('numBdN','numBd');renderCanvas()">
+                                </div>
                                 <input type="range" id="numBd" class="slider-track" min="1" max="20" value="3" oninput="syncSR('numBd','numBdN');renderCanvas()">
                                 <div class="slider-range-row"><span>1px</span><span class="slider-tip"></span><span>20px</span></div>
                             </div>
@@ -2168,7 +2194,11 @@
                                 <div class="form-group"><label>文字颜色</label><input type="color" id="txtCol" value="#333333" oninput="updateTxtPreview()"></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">🔤 文字大小</span><input type="number" id="txtSzN" class="slider-num" value="22" min="1" oninput="syncNS('txtSzN','txtSzR');document.getElementById('txtSz').value=this.value;updateTxtPreview()"><button class="reset-btn" onclick="resetSlider('txtSzR',22)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('txtSzR',22)">↺</button>
+                                    <span class="slabel">🔤 文字大小</span>
+                                    <input type="number" id="txtSzN" class="slider-num" value="22" min="1" oninput="syncNS('txtSzN','txtSzR');document.getElementById('txtSz').value=this.value;updateTxtPreview()">
+                                </div>
                                 <input type="range" id="txtSzR" class="slider-track" min="8" max="200" value="22" oninput="syncSR('txtSzR','txtSzN');document.getElementById('txtSz').value=document.getElementById('txtSzN').value;updateTxtPreview()">
                                 <div class="slider-range-row"><span>8px 极小</span><span class="slider-tip"></span><span>200px 超大</span></div>
                             </div>
@@ -2187,12 +2217,20 @@
                                 <div class="form-group"><label>垂直 Y%</label><input type="number" id="txtY" value="90" min="0" max="100" oninput="updateTxtPreview()"></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">🔄 旋转角度</span><input type="number" id="txtRotN" class="slider-num" value="-30" oninput="syncNS('txtRotN','txtRot');updateTxtPreview()"><button class="reset-btn" onclick="resetSlider('txtRot',-30)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('txtRot',-30)">↺</button>
+                                    <span class="slabel">🔄 旋转角度</span>
+                                    <input type="number" id="txtRotN" class="slider-num" value="-30" oninput="syncNS('txtRotN','txtRot');updateTxtPreview()">
+                                </div>
                                 <input type="range" id="txtRot" class="slider-track" min="-180" max="180" value="-30" oninput="syncSR('txtRot','txtRotN');updateTxtPreview()">
                                 <div class="slider-range-row"><span>-180°</span><span class="slider-tip"></span><span>+180°</span></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">🌫 文字透明度</span><input type="number" id="txtAlphaN" class="slider-num" value="100" min="1" max="100" oninput="syncNS('txtAlphaN','txtAlphaR');updateTxtPreview()"><button class="reset-btn" onclick="resetSlider('txtAlphaR',100)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('txtAlphaR',100)">↺</button>
+                                    <span class="slabel">🌫 文字透明度</span>
+                                    <input type="number" id="txtAlphaN" class="slider-num" value="100" min="1" max="100" oninput="syncNS('txtAlphaN','txtAlphaR');updateTxtPreview()">
+                                </div>
                                 <input type="range" id="txtAlphaR" class="slider-track" min="1" max="100" value="100" oninput="syncSR('txtAlphaR','txtAlphaN');updateTxtPreview()">
                                 <div class="slider-range-row"><span>1% 透明</span><span class="slider-tip"></span><span>100% 不透明</span></div>
                             </div>
@@ -2220,7 +2258,11 @@
                             <input type="file" id="wmFile" accept="image/*" style="display:none" onchange="loadWM(this)">
                             <div class="divider"></div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">🌫 水印透明度 <span class="live-badge">● LIVE</span></span><input type="number" id="wmAN" class="slider-num" value="40" min="1" max="100" oninput="syncNS('wmAN','wmA');updateWMDraft()"><button class="reset-btn" onclick="resetSlider('wmA',40)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('wmA',40)">↺</button>
+                                    <span class="slabel">🌫 水印透明度 <span class="live-badge">● LIVE</span></span>
+                                    <input type="number" id="wmAN" class="slider-num" value="40" min="1" max="100" oninput="syncNS('wmAN','wmA');updateWMDraft()">
+                                </div>
                                 <input type="range" id="wmA" class="slider-track" min="1" max="100" value="40" oninput="syncSR('wmA','wmAN');updateWMDraft()">
                                 <div class="slider-range-row"><span>1% 透明</span><span class="slider-tip"></span><span>100% 不透明</span></div>
                             </div>
@@ -2235,7 +2277,11 @@
                                 </select>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">📏 水印大小 <span class="live-badge">● LIVE</span></span><input type="number" id="wmSzN" class="slider-num" value="33" min="1" max="100" oninput="syncNS('wmSzN','wmSz');updateWMDraft()"><button class="reset-btn" onclick="resetSlider('wmSz',33)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('wmSz',33)">↺</button>
+                                    <span class="slabel">📏 水印大小 <span class="live-badge">● LIVE</span></span>
+                                    <input type="number" id="wmSzN" class="slider-num" value="33" min="1" max="100" oninput="syncNS('wmSzN','wmSz');updateWMDraft()">
+                                </div>
                                 <input type="range" id="wmSz" class="slider-track" min="1" max="100" value="33" oninput="syncSR('wmSz','wmSzN');updateWMDraft()">
                                 <div class="slider-range-row"><span>1% 极小</span><span class="slider-tip"></span><span>100% 铺满</span></div>
                             </div>
@@ -2281,22 +2327,38 @@
                             </div>
                             <div class="step-label"><span class="step-num">3</span>调整水印参数 <span class="live-badge">● LIVE</span></div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">🌫 水印透明度</span><input type="number" id="ppwmAN" class="slider-num" value="100" min="1" max="100" oninput="syncNS('ppwmAN','ppwmA');updatePPWMDraft()"><button class="reset-btn" onclick="resetSlider('ppwmA',100)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('ppwmA',100)">↺</button>
+                                    <span class="slabel">🌫 水印透明度</span>
+                                    <input type="number" id="ppwmAN" class="slider-num" value="100" min="1" max="100" oninput="syncNS('ppwmAN','ppwmA');updatePPWMDraft()">
+                                </div>
                                 <input type="range" id="ppwmA" class="slider-track" min="1" max="100" value="100" oninput="syncSR('ppwmA','ppwmAN');updatePPWMDraft()">
                                 <div class="slider-range-row"><span>1% 透明</span><span class="slider-tip"></span><span>100% 不透明</span></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">📏 水印大小</span><input type="number" id="ppwmSzN" class="slider-num" value="100" min="1" max="100" oninput="syncNS('ppwmSzN','ppwmSz');updatePPWMDraft()"><button class="reset-btn" onclick="resetSlider('ppwmSz',100)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('ppwmSz',100)">↺</button>
+                                    <span class="slabel">📏 水印大小</span>
+                                    <input type="number" id="ppwmSzN" class="slider-num" value="100" min="1" max="100" oninput="syncNS('ppwmSzN','ppwmSz');updatePPWMDraft()">
+                                </div>
                                 <input type="range" id="ppwmSz" class="slider-track" min="1" max="100" value="100" oninput="syncSR('ppwmSz','ppwmSzN');updatePPWMDraft()">
                                 <div class="slider-range-row"><span>1% 极小</span><span class="slider-tip"></span><span>100% 铺满</span></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">↔ X 偏移 (水平)</span><input type="number" id="ppwmOffsetXN" class="slider-num" value="0" min="-100" max="100" oninput="syncNS('ppwmOffsetXN','ppwmOffsetX');updatePPWMDraft()"><button class="reset-btn" onclick="resetSlider('ppwmOffsetX',0)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('ppwmOffsetX',0)">↺</button>
+                                    <span class="slabel">↔ X 偏移 (水平)</span>
+                                    <input type="number" id="ppwmOffsetXN" class="slider-num" value="0" min="-100" max="100" oninput="syncNS('ppwmOffsetXN','ppwmOffsetX');updatePPWMDraft()">
+                                </div>
                                 <input type="range" id="ppwmOffsetX" class="slider-track" min="-100" max="100" value="0" oninput="syncSR('ppwmOffsetX','ppwmOffsetXN');updatePPWMDraft()">
                                 <div class="slider-range-row"><span>-100%</span><span class="slider-tip"></span><span>+100%</span></div>
                             </div>
                             <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">↕ Y 偏移 (垂直)</span><input type="number" id="ppwmOffsetYN" class="slider-num" value="0" min="-100" max="100" oninput="syncNS('ppwmOffsetYN','ppwmOffsetY');updatePPWMDraft()"><button class="reset-btn" onclick="resetSlider('ppwmOffsetY',0)">↺</button></div>
+                                <div class="slider-label-row">
+                                    <button class="reset-btn" onclick="resetSlider('ppwmOffsetY',0)">↺</button>
+                                    <span class="slabel">↕ Y 偏移 (垂直)</span>
+                                    <input type="number" id="ppwmOffsetYN" class="slider-num" value="0" min="-100" max="100" oninput="syncNS('ppwmOffsetYN','ppwmOffsetY');updatePPWMDraft()">
+                                </div>
                                 <input type="range" id="ppwmOffsetY" class="slider-track" min="-100" max="100" value="0" oninput="syncSR('ppwmOffsetY','ppwmOffsetYN');updatePPWMDraft()">
                                 <div class="slider-range-row"><span>-100%</span><span class="slider-tip"></span><span>+100%</span></div>
                             </div>
@@ -3399,9 +3461,6 @@
             var page = 1;
             var results = [];
 
-            // ★ 使用当前选中的缩放倍率
-            var scale = +document.getElementById('dlScale').value;
-
             var statusMsg = document.getElementById('imgCount');
             var originalText = statusMsg.textContent;
 
@@ -3424,8 +3483,7 @@
                 var origImgs = imgs;
                 imgs = pageImgs;
                 document.getElementById('startNum').value = currentSn;
-                // ★ 使用 scale 参数，且不包含草稿
-                renderToCtx(tempCtx, scale, false);
+                renderToCtx(tempCtx, 1, true);
                 imgs = origImgs;
 
                 var rangeStr = currentSn + '~' + (currentSn + pageImgs.length - 1);
@@ -3447,13 +3505,14 @@
             processNextBatch();
         }
 
+        // ★ 保存并继续：强制使用 3x PNG 输出
         function saveAndContinue() {
             if (imgs.length === 0) { alert('🐻 请先添加图片~'); return; }
             var sn = +document.getElementById('startNum').value,
                 cnt = imgs.length;
             var exp = document.createElement('canvas'),
                 ec = exp.getContext('2d');
-            renderToCtx(ec, 1, false);
+            renderToCtx(ec, 3, false);
             saved.push({ url: exp.toDataURL('image/png'), range: sn + '~' + (sn + cnt - 1), cnt: cnt, ts: Date
                     .now() });
             gNext = sn + cnt;
