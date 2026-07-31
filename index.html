@@ -3399,6 +3399,9 @@
             var page = 1;
             var results = [];
 
+            // ★ 使用当前选中的缩放倍率
+            var scale = +document.getElementById('dlScale').value;
+
             var statusMsg = document.getElementById('imgCount');
             var originalText = statusMsg.textContent;
 
@@ -3421,7 +3424,8 @@
                 var origImgs = imgs;
                 imgs = pageImgs;
                 document.getElementById('startNum').value = currentSn;
-                renderToCtx(tempCtx, 1, true);
+                // ★ 使用 scale 参数，且不包含草稿
+                renderToCtx(tempCtx, scale, false);
                 imgs = origImgs;
 
                 var rangeStr = currentSn + '~' + (currentSn + pageImgs.length - 1);
