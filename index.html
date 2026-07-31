@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>熊啊熊啊熊拼图</title>
     <style>
-        /* 固定棕色主题，移除美化变量 */
         :root {
             --bg: #ffffff;
             --bg2: #f8f8f8;
@@ -1106,43 +1105,6 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        .ppalpha-box {
-            background: var(--bg2);
-            border: 1.5px solid var(--border2);
-            border-radius: 10px;
-            padding: 9px;
-            margin-bottom: 8px;
-        }
-        .pp-aba {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 5px;
-            margin-bottom: 7px;
-        }
-        .pp-abox {
-            background: var(--bg2);
-            border: 2px solid var(--border2);
-            border-radius: 7px;
-            padding: 4px;
-            text-align: center;
-            font-size: 9px;
-            color: var(--text2);
-            font-weight: 700;
-            cursor: pointer;
-            transition: border-color 0.18s;
-        }
-        .pp-abox:hover {
-            border-color: var(--accent);
-        }
-        .pp-abox canvas {
-            width: 100%;
-            border-radius: 3px;
-            display: block;
-            margin-bottom: 2px;
-            background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%);
-            background-size: 6px 6px;
-            background-position: 0 0, 0 3px, 3px -3px, -3px 0;
-        }
         .photo-picker-wrap {
             background: var(--bg2);
             border: 1.5px solid var(--border2);
@@ -1897,7 +1859,6 @@
         </div>
         <div class="topbar-actions">
             <button class="icon-btn" onclick="openHelp()" title="使用教程">📖</button>
-            <!-- 美化相关按钮已移除 -->
         </div>
     </div>
 
@@ -1957,10 +1918,10 @@
                 </div>
                 <div class="h-divider"></div>
                 <div class="h-section">
-                    <div class="h-sec-title"><span class="h-sec-icon">🎨</span>Tab ⑤ · 改色<span class="h-tag teal">Alpha通道</span></div>
+                    <div class="h-sec-title"><span class="h-sec-icon">💧</span>Tab ④ · 水印<span class="h-tag">原图上传·无损</span></div>
                     <div class="h-items">
-                        <div class="h-item"><span class="h-item-icon">🖌</span><div class="h-item-body"><div class="h-item-name">透明底图片改色</div><div class="h-item-desc">上传带透明通道的 PNG 图片，<b>锁定Alpha通道</b>改色，默认模式为<b>纯色填充</b>。</div></div></div>
-                        <div class="h-item"><span class="h-item-icon">↗</span><div class="h-item-body"><div class="h-item-name">改色结果去向</div><div class="h-item-desc">可 <b>导出</b> 改色图片；或 <b>🌐 应用为全局水印</b>；或 <b>🎯 去「指定」Tab</b> 叠加到特定格子。</div></div></div>
+                        <div class="h-item"><span class="h-item-icon">🖼</span><div class="h-item-body"><div class="h-item-name">水印原图上传</div><div class="h-item-desc">上传水印图片（PNG/JPG/WEBP），以<b>原始质量</b>加载，<b>不压缩</b>，确保水印清晰度。</div></div></div>
+                        <div class="h-item"><span class="h-item-icon">⚙️</span><div class="h-item-body"><div class="h-item-name">水印参数调整</div><div class="h-item-desc">可调整<b>透明度</b>、<b>大小</b>、<b>位置</b>（居中/左上/右上/左下/右下/平铺）及<b>混合模式</b>，实时预览效果。</div></div></div>
                     </div>
                 </div>
                 <div class="h-divider"></div>
@@ -1969,7 +1930,7 @@
                     <div class="h-items">
                         <div class="h-item"><span class="h-item-icon">🔢</span><div class="h-item-body"><div class="h-item-name">操作四步骤</div><div class="h-item-desc"><b>Step 1</b> 选图 → <b>Step 2</b> 勾格 → <b>Step 3</b> 调参（实时同步草稿预览）→ <b>Step 4</b> 确认添加到图层</div></div></div>
                     </div>
-                    <div class="h-tip"><span class="h-tip-icon">🌟</span><div class="h-tip-text">将同一个Logo改成多种颜色，分别叠加到不同格子，一步完成多色版本展示图。</div></div>
+                    <div class="h-tip"><span class="h-tip-icon">🌟</span><div class="h-tip-text">将同一个Logo叠加到不同图片格，一步完成多版本展示图。</div></div>
                 </div>
                 <div class="h-divider"></div>
                 <div class="h-section">
@@ -1984,8 +1945,7 @@
                         <div class="h-sc"><span class="h-sc-key">2×</span><span class="h-sc-desc">导出2倍清晰图</span></div>
                         <div class="h-sc"><span class="h-sc-key">50%</span><span class="h-sc-desc">默认预览缩放比例</span></div>
                     </div>
-                    <div class="h-tip" style="margin-top:10px;"><span class="h-tip-icon">📦</span><div class="h-tip-text"><b>导入多张图片一键批量拼图</b>：点击「添加图片」区域的 <b>📥 导入多张图片一键批量拼图</b> 按钮，系统会自动根据当前的行列数和序号设置，将所有图片按顺序分组，<b>批量生成多张拼图</b>并直接保存到右侧「已保存预览」列表中。每组的序号会连续递增（如第1组1~4，第2组5~8），方便您一次性完成大批量图片的拼图制作与预览。</div></div>
-                    <div class="h-tip"><span class="h-tip-icon">⚠️</span><div class="h-tip-text"><b>草稿层</b>只在预览中可见，<b>不会出现在任何导出或保存的图片里</b>，确认添加后才正式渲染。</div></div>
+                    <div class="h-tip" style="margin-top:10px;"><span class="h-tip-icon">⚠️</span><div class="h-tip-text"><b>草稿层</b>只在预览中可见，<b>不会出现在任何导出或保存的图片里</b>，确认添加后才正式渲染。</div></div>
                 </div>
                 <div class="h-divider"></div>
                 <div style="text-align:center;padding:8px 0 4px;">
@@ -2041,7 +2001,6 @@
                         <button class="tab-btn" onclick="switchTab('number',this)">序号</button>
                         <button class="tab-btn" onclick="switchTab('text',this)">文字</button>
                         <button class="tab-btn" onclick="switchTab('wm',this)">水印</button>
-                        <button class="tab-btn" onclick="switchTab('alpha',this)">改色</button>
                         <button class="tab-btn" onclick="switchTab('ppwm',this)">指定</button>
                     </div>
                 </div>
@@ -2265,54 +2224,16 @@
                         </div>
                     </div>
 
-                    <!-- 改色 -->
-                    <div class="tab-pane" id="tab-alpha">
-                        <div class="sec-title" onclick="togSec(this)"><span>🎨 透明底改色</span><span class="arrow">▾</span></div>
-                        <div class="sec-body">
-                            <p style="font-size:11px;color:var(--text2);font-weight:700;line-height:1.6;margin-bottom:6px">🐾 锁定Alpha通道改色，改完可直接到「指定」Tab 叠加到选定图片格~</p>
-                            <button class="btn bo" onclick="document.getElementById('alphaFile').click()">选择透明底PNG</button>
-                            <input type="file" id="alphaFile" accept="image/*" style="display:none" onchange="loadAlpha(this)">
-                            <div class="alpha-hint" style="margin-top:6px">👆 点击图片可预览大图</div>
-                            <div class="aba">
-                                <div class="abox" onclick="previewAlphaImg('before')"><canvas id="aBefore" width="100" height="70"></canvas>原图</div>
-                                <div class="abox" onclick="previewAlphaImg('after')"><canvas id="aAfter" width="100" height="70"></canvas>改色后</div>
-                            </div>
-                            <div class="form-group"><label>目标颜色</label><input type="color" id="aColor" value="#795548" oninput="prevAlpha()"></div>
-                            <div class="form-group"><label>改色模式</label>
-                                <select id="aMode" onchange="togGrad();prevAlpha()">
-                                    <option value="tint">着色（保留明暗）</option>
-                                    <option value="solid" selected>纯色填充</option>
-                                    <option value="multiply">正片叠底</option>
-                                    <option value="gradient">渐变映射</option>
-                                </select>
-                            </div>
-                            <div class="form-group" id="gradG" style="display:none"><label>渐变终点色</label><input type="color" id="aColor2" value="#fff8f0" oninput="prevAlpha()"></div>
-                            <div class="slider-wrap">
-                                <div class="slider-label-row"><span class="slabel">💪 改色强度</span><input type="number" id="aStrN" class="slider-num" value="100" min="0" max="100" oninput="syncNS('aStrN','aStr');prevAlpha()"></div>
-                                <input type="range" id="aStr" class="slider-track" min="0" max="100" value="100" oninput="syncSR('aStr','aStrN');prevAlpha()">
-                                <div class="slider-range-row"><span>0%</span><span class="slider-tip"></span><span>100%</span></div>
-                            </div>
-                            <button class="btn bt" onclick="alphaToGlobalWM()">🌐 应用为全局水印（草稿）</button>
-                            <button class="btn bp" onclick="goToPPWMTab()">🎯 去「指定」Tab 添加到指定图片</button>
-                            <button class="btn bg" onclick="dlAlpha()">💾 导出改色图片</button>
-                        </div>
-                    </div>
-
                     <!-- 指定 -->
                     <div class="tab-pane" id="tab-ppwm">
-                        <div class="sec-title" onclick="togSec(this)"><span>🎯 指定图片改色水印</span><span class="arrow">▾</span></div>
+                        <div class="sec-title" onclick="togSec(this)"><span>🎯 指定图片水印</span><span class="arrow">▾</span></div>
                         <div class="sec-body">
-                            <p style="font-size:11px;color:var(--text2);font-weight:700;line-height:1.7;margin-bottom:8px;">将改色图叠加到<b style="color:var(--accent)">指定的图片格</b>，不同改色叠加到不同格，调参时<b style="color:#56c264">实时预览</b>到上方拼图~</p>
-                            <div class="step-label"><span class="step-num">1</span>选择改色图来源</div>
-                            <div class="ppalpha-box">
-                                <div style="font-size:10px;color:var(--text2);font-weight:700;margin-bottom:5px;">当前改色结果（来自「改色」Tab）：</div>
-                                <div class="pp-aba">
-                                    <div class="pp-abox" onclick="previewAlphaImg('before')"><canvas id="ppaBefore" width="90" height="60"></canvas>原图</div>
-                                    <div class="pp-abox" onclick="previewAlphaImg('after')"><canvas id="ppaAfter" width="90" height="60"></canvas>改色后 ✓</div>
-                                </div>
+                            <p style="font-size:11px;color:var(--text2);font-weight:700;line-height:1.7;margin-bottom:8px;">将水印图叠加到<b style="color:var(--accent)">指定的图片格</b>，调参时<b style="color:#56c264">实时预览</b>到上方拼图~</p>
+                            <div class="step-label"><span class="step-num">1</span>选择水印图片</div>
+                            <div class="ppalpha-box" style="background:var(--bg2);border:1.5px solid var(--border2);border-radius:10px;padding:9px;margin-bottom:8px;">
+                                <div style="font-size:10px;color:var(--text2);font-weight:700;margin-bottom:5px;">上传水印图片（原图质量，不压缩）：</div>
                                 <div class="btn-row">
-                                    <button class="btn bo" style="font-size:11px" onclick="document.getElementById('ppAlphaFile').click()">📂 单独上传</button>
-                                    <button class="btn bt" style="font-size:11px" onclick="useCurAlphaForPP()">↑ 使用改色结果</button>
+                                    <button class="btn bo" style="font-size:11px" onclick="document.getElementById('ppAlphaFile').click()">📂 选择水印图片</button>
                                 </div>
                                 <input type="file" id="ppAlphaFile" accept="image/*" style="display:none" onchange="loadPPAlpha(this)">
                                 <div style="font-size:10px;color:var(--text2);font-weight:700;margin:7px 0 4px;">已选水印图片：</div>
@@ -2413,7 +2334,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // 主题记忆功能已移除
+        // 主题、改色功能已移除，固定棕色主题
 
         function openHelp() { document.getElementById('helpModal').classList.add('show'); }
 
@@ -2427,9 +2348,7 @@
             perPhotoWMs = [],
             saved = [],
             gNext = 1;
-        var alphaOrig = null,
-            alphaURL = null,
-            modalIdx = -1,
+        var modalIdx = -1,
             modalMode = 'saved';
         var txtDraft = null,
             wmDraft = null,
@@ -2444,8 +2363,6 @@
             curRatio = '9:16',
             curNS = 'circle',
             curTS = 'single';
-        var isDark = false,
-            schemeIdx = 8;
         var mc = document.getElementById('mainCanvas'),
             ctx = mc.getContext('2d');
 
@@ -2517,10 +2434,6 @@
             document.getElementById('txtSzN').value = v; var r = document.getElementById('txtSzR');
             r.value = Math.min(Math.max(+v, +r.min), +r.max); }
 
-        function buildTheme() {
-            // 固定棕色主题，无需额外设置
-        }
-
         function switchTab(name, btn) {
             document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('on'); });
             document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('on'); });
@@ -2529,13 +2442,9 @@
             document.getElementById('addImgSection').style.display = (name === 'layout') ? '' : 'none';
             if (name !== 'text') txtDraft = null;
             if (name !== 'wm') wmDraft = null;
-            if (name === 'ppwm') { syncPPAlphaThumbs();
-                refreshPhotoPicker(); }
+            if (name === 'ppwm') { refreshPhotoPicker(); }
             renderCanvas();
         }
-
-        function goToPPWMTab() { var btn = document.querySelectorAll('.tab-btn')[5];
-            switchTab('ppwm', btn); }
 
         (function() {
             var gp = document.getElementById('gridPicker');
@@ -2903,144 +2812,6 @@
             refreshWMLayers();
             renderCanvas(); }
 
-        function loadAlpha(input) {
-            var f = input.files[0];
-            if (!f) return;
-            var r = new FileReader();
-            r.onload = function(ev) {
-                var img = new Image();
-                img.onload = function() { alphaOrig = img;
-                    drawAlphaBefore();
-                    prevAlpha(); };
-                img.src = ev.target.result;
-            };
-            r.readAsDataURL(f);
-        }
-
-        function drawAlphaBefore() {
-            var bc = document.getElementById('aBefore'),
-                bx = bc.getContext('2d');
-            bc.width = 100;
-            bc.height = 70;
-            var s = Math.min(100 / alphaOrig.width, 70 / alphaOrig.height);
-            bx.clearRect(0, 0, 100, 70);
-            bx.drawImage(alphaOrig, (100 - alphaOrig.width * s) / 2, (70 - alphaOrig.height * s) / 2, alphaOrig.width * s,
-                alphaOrig.height * s);
-        }
-
-        function togGrad() { document.getElementById('gradG').style.display = document.getElementById('aMode').value ===
-                'gradient' ? '' : 'none'; }
-
-        function doAlpha(src, tc, mode, st, tc2) {
-            var tmp = document.createElement('canvas');
-            tmp.width = src.width;
-            tmp.height = src.height;
-            var tx = tmp.getContext('2d');
-            tx.drawImage(src, 0, 0);
-            var id = tx.getImageData(0, 0, tmp.width, tmp.height),
-                d = id.data,
-                s = st / 100;
-            for (var i = 0; i < d.length; i += 4) {
-                if (d[i + 3] === 0) continue;
-                var lum = (d[i] * 0.299 + d[i + 1] * 0.587 + d[i + 2] * 0.114) / 255;
-                var nr, ng, nb;
-                if (mode === 'tint') { nr = tc.r * lum;
-                    ng = tc.g * lum;
-                    nb = tc.b * lum; } else if (mode === 'solid') { nr = tc.r;
-                    ng = tc.g;
-                    nb = tc.b; } else if (mode === 'multiply') { nr = d[i] * tc.r / 255;
-                    ng = d[i + 1] * tc.g / 255;
-                    nb = d[i + 2] * tc.b / 255; } else { nr = tc.r + (tc2.r - tc.r) * lum;
-                    ng = tc.g + (tc2.g - tc.g) * lum;
-                    nb = tc.b + (tc2.b - tc.b) * lum; }
-                d[i] = Math.round(d[i] * (1 - s) + nr * s);
-                d[i + 1] = Math.round(d[i + 1] * (1 - s) + ng * s);
-                d[i + 2] = Math.round(d[i + 2] * (1 - s) + nb * s);
-            }
-            tx.putImageData(id, 0, 0);
-            alphaURL = tmp.toDataURL('image/png');
-            return tmp;
-        }
-
-        function prevAlpha() {
-            if (!alphaOrig) return;
-            var result = doAlpha(alphaOrig, h2r(document.getElementById('aColor').value), document.getElementById('aMode')
-                .value, gv('aStrN'), h2r(document.getElementById('aColor2').value));
-            var ac = document.getElementById('aAfter'),
-                ax = ac.getContext('2d');
-            ac.width = 100;
-            ac.height = 70;
-            var s = Math.min(100 / result.width, 70 / result.height);
-            ax.clearRect(0, 0, 100, 70);
-            ax.drawImage(result, (100 - result.width * s) / 2, (70 - result.height * s) / 2, result.width * s, result
-                .height * s);
-        }
-
-        function previewAlphaImg(type) {
-            if (type === 'before') { if (!alphaOrig) return; var tmp = document.createElement('canvas');
-                tmp.width = alphaOrig.width;
-                tmp.height = alphaOrig.height;
-                tmp.getContext('2d').drawImage(alphaOrig, 0, 0);
-                openSingleModal(tmp.toDataURL()); } else { if (!alphaURL) return;
-                openSingleModal(alphaURL); }
-        }
-
-        function alphaToGlobalWM() {
-            if (!alphaOrig) { alert('请先选择透明底图片~'); return; }
-            prevAlpha();
-            var img = new Image();
-            img.onload = function() {
-                wmDraftImg = img;
-                wmDraftSrc = alphaURL;
-                var p = document.getElementById('wmDraftPrev');
-                p.innerHTML = '<img src="' + alphaURL + '"><span class="draft-indicator">草稿预览中</span>';
-                p.classList.add('has-img');
-                document.querySelectorAll('.tab-btn')[3].click();
-                updateWMDraft();
-            };
-            img.src = alphaURL;
-        }
-
-        function dlAlpha() {
-            if (!alphaURL) { if (!alphaOrig) { alert('请先选择图片'); return; }
-                prevAlpha(); }
-            var a = document.createElement('a');
-            a.download = 'recolored_' + Date.now() + '.png';
-            a.href = alphaURL;
-            a.click();
-        }
-
-        function syncPPAlphaThumbs() {
-            var pb = document.getElementById('ppaBefore'),
-                pbx = pb.getContext('2d');
-            pb.width = 90;
-            pb.height = 60;
-            if (alphaOrig) {
-                var s = Math.min(90 / alphaOrig.width, 60 / alphaOrig.height);
-                pbx.clearRect(0, 0, 90, 60);
-                pbx.drawImage(alphaOrig, (90 - alphaOrig.width * s) / 2, (60 - alphaOrig.height * s) / 2, alphaOrig.width *
-                    s, alphaOrig.height * s);
-            } else { pbx.clearRect(0, 0, 90, 60);
-                pbx.fillStyle = '#ddd';
-                pbx.fillRect(0, 0, 90, 60); }
-            var pa = document.getElementById('ppaAfter'),
-                pax = pa.getContext('2d');
-            pa.width = 90;
-            pa.height = 60;
-            if (alphaURL) {
-                var img = new Image();
-                img.onload = function() {
-                    var s2 = Math.min(90 / img.width, 60 / img.height);
-                    pax.clearRect(0, 0, 90, 60);
-                    pax.drawImage(img, (90 - img.width * s2) / 2, (60 - img.height * s2) / 2, img.width * s2, img
-                        .height * s2);
-                };
-                img.src = alphaURL;
-            } else { pax.clearRect(0, 0, 90, 60);
-                pax.fillStyle = '#ddd';
-                pax.fillRect(0, 0, 90, 60); }
-        }
-
         function loadPPAlpha(input) {
             var f = input.files[0];
             if (!f) return;
@@ -3058,20 +2829,6 @@
                 img.src = ev.target.result;
             };
             r.readAsDataURL(f);
-        }
-
-        function useCurAlphaForPP() {
-            if (!alphaURL) { alert('🐻 请先在「改色」Tab 完成改色操作~'); return; }
-            var img = new Image();
-            img.onload = function() {
-                ppwmDraftImg = img;
-                ppwmDraftSrc = alphaURL;
-                var p = document.getElementById('ppwmImgPrev');
-                p.innerHTML = '<img src="' + alphaURL + '"><span class="draft-indicator">已选择</span>';
-                p.classList.add('has-img');
-                updatePPWMDraft();
-            };
-            img.src = alphaURL;
         }
 
         function previewPPWMImg() { if (!ppwmDraftSrc) return;
@@ -3569,20 +3326,17 @@
             var page = 1;
             var results = [];
 
-            // 显示处理状态（可选）
             var statusMsg = document.getElementById('imgCount');
             var originalText = statusMsg.textContent;
 
             function processNextBatch() {
                 if (startIdx >= total) {
-                    // 所有批次处理完成，一次性保存所有结果
                     for (var i = 0; i < results.length; i++) {
                         saved.push(results[i]);
                     }
                     document.getElementById('startNum').value = originalStart;
                     refreshSaved();
                     renderCanvas();
-                    // 恢复状态显示
                     statusMsg.textContent = originalText;
                     return;
                 }
@@ -3609,14 +3363,10 @@
                 startIdx += perPage;
                 page++;
 
-                // 更新状态显示
                 statusMsg.textContent = '处理中 ' + Math.min(startIdx, total) + '/' + total + ' 张';
-
-                // 使用 setTimeout 让主线程有机会处理UI事件，避免卡顿
                 setTimeout(processNextBatch, 50);
             }
 
-            // 开始异步处理
             processNextBatch();
         }
 
@@ -3704,8 +3454,11 @@
                 ec = exp.getContext('2d');
             renderToCtx(ec, scale, false);
             var a = document.createElement('a');
+            var mime = (fmt === 'jpeg') ? 'image/jpeg' : 'image/png';
+            // PNG 无损，JPEG 使用最高质量 1.0
+            var quality = (fmt === 'jpeg') ? 1.0 : undefined;
             a.download = 'bear_collage_' + Date.now() + '.' + fmt;
-            a.href = exp.toDataURL(fmt === 'jpeg' ? 'image/jpeg' : 'image/png', 0.93);
+            a.href = exp.toDataURL(mime, quality);
             a.click();
         }
 
@@ -3764,7 +3517,6 @@
         }
         document.getElementById('modal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 
-        buildTheme();
         renderCanvas();
         applyVP();
         updateTxtPreview();
@@ -3772,3 +3524,4 @@
     </script>
 </body>
 </html>
+```
