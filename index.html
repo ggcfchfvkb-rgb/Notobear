@@ -2261,6 +2261,17 @@
                                 <input type="range" id="ppwmSz" class="slider-track" min="1" max="100" value="100" oninput="syncSR('ppwmSz','ppwmSzN');updatePPWMDraft()">
                                 <div class="slider-range-row"><span>1% 极小</span><span class="slider-tip"></span><span>100% 铺满</span></div>
                             </div>
+                            <!-- ★ 新增 X / Y 偏移控制 -->
+                            <div class="slider-wrap">
+                                <div class="slider-label-row"><span class="slabel">↔ X 偏移 (水平)</span><input type="number" id="ppwmOffsetXN" class="slider-num" value="0" min="-50" max="50" oninput="syncNS('ppwmOffsetXN','ppwmOffsetX');updatePPWMDraft()"></div>
+                                <input type="range" id="ppwmOffsetX" class="slider-track" min="-50" max="50" value="0" oninput="syncSR('ppwmOffsetX','ppwmOffsetXN');updatePPWMDraft()">
+                                <div class="slider-range-row"><span>-50%</span><span class="slider-tip"></span><span>+50%</span></div>
+                            </div>
+                            <div class="slider-wrap">
+                                <div class="slider-label-row"><span class="slabel">↕ Y 偏移 (垂直)</span><input type="number" id="ppwmOffsetYN" class="slider-num" value="0" min="-50" max="50" oninput="syncNS('ppwmOffsetYN','ppwmOffsetY');updatePPWMDraft()"></div>
+                                <input type="range" id="ppwmOffsetY" class="slider-track" min="-50" max="50" value="0" oninput="syncSR('ppwmOffsetY','ppwmOffsetYN');updatePPWMDraft()">
+                                <div class="slider-range-row"><span>-50%</span><span class="slider-tip"></span><span>+50%</span></div>
+                            </div>
                             <div class="r2">
                                 <div class="form-group"><label>水印位置</label>
                                     <select id="ppwmPos" onchange="updatePPWMDraft()">
@@ -2880,6 +2891,8 @@
                 blend: document.getElementById('ppwmBlend').value,
                 sz: gv('ppwmSzN') / 100,
                 pos: document.getElementById('ppwmPos').value,
+                offsetX: gv('ppwmOffsetXN') / 100,
+                offsetY: gv('ppwmOffsetYN') / 100,
                 targets: Array.from(ppwmDraftTargets).sort(function(a, b) { return a - b; })
             };
             dz.classList.add('live');
@@ -2905,6 +2918,8 @@
                 blend: document.getElementById('ppwmBlend').value,
                 sz: gv('ppwmSzN') / 100,
                 pos: document.getElementById('ppwmPos').value,
+                offsetX: gv('ppwmOffsetXN') / 100,
+                offsetY: gv('ppwmOffsetYN') / 100,
                 targets: Array.from(ppwmDraftTargets).sort(function(a, b) { return a - b; })
             });
             cancelPPWMDraft();
@@ -3113,9 +3128,9 @@
             c.restore();
         }
 
-        function drawWMOnRect(c, wm, x, y, w, h, alpha, blend, sp, pos) {
+        function drawWMOnRect(c, wm, x, y, w, h, alpha, blend, sp, pos, offsetX, offsetY) {
             if (!wm) return;
-            // 启用高质量图像平滑
+            // ★ 启用高质量图像平滑
             c.imageSmoothingEnabled = true;
             c.imageSmoothingQuality = 'high';
             var sc = Math.min(w * sp / wm.width, h * sp / wm.height);
@@ -3131,12 +3146,18 @@
             } else {
                 var dx, dy,
                     mg = 12;
+                // 根据位置计算基础坐标
                 if (pos === 'c') { dx = x + (w - dw) / 2;
                     dy = y + (h - dh) / 2; } else if (pos === 'tl') { dx = x + mg;
                     dy = y + mg; } else if (pos === 'tr') { dx = x + w - dw - mg;
                     dy = y + mg; } else if (pos === 'bl') { dx = x + mg;
                     dy = y + h - dh - mg; } else { dx = x + w - dw - mg;
                     dy = y + h - dh - mg; }
+                // ★ 应用偏移量 (offsetX, offsetY 为百分比，相对于水印尺寸)
+                var offX = (offsetX || 0) * dw;
+                var offY = (offsetY || 0) * dh;
+                dx += offX;
+                dy += offY;
                 c.drawImage(wm, dx, dy, dw, dh);
             }
             c.restore();
@@ -3148,14 +3169,15 @@
             if (radius > 0) drawRR(c, pos.x, pos.y, pos.w, pos.h, radius);
             else c.rect(pos.x, pos.y, pos.w, pos.h);
             c.clip();
-            drawWMOnRect(c, wm.img, pos.x, pos.y, pos.w, pos.h, wm.alpha, wm.blend, wm.sz, wm.pos);
+            drawWMOnRect(c, wm.img, pos.x, pos.y, pos.w, pos.h, wm.alpha, wm.blend, wm.sz, wm.pos, wm.offsetX, wm
+            .offsetY);
             c.restore();
         }
 
         function renderToCtx(c, scale, withDraft) {
             scale = scale || 1;
             withDraft = (withDraft !== false);
-            // 启用高质量图像平滑
+            // ★ 全局启用高质量图像平滑
             c.imageSmoothingEnabled = true;
             c.imageSmoothingQuality = 'high';
             if (imgs.length === 0) {
@@ -3530,4 +3552,3 @@
     </script>
 </body>
 </html>
-```
