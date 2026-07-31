@@ -512,7 +512,7 @@
             flex: 1;
         }
 
-        /* ★ 重置按钮样式 — 移到滑块上方 (slabel 左侧) */
+        /* ★ 重置按钮样式 — 与数值输入框在同一行内 */
         .reset-btn {
             width: 22px;
             height: 22px;
@@ -2076,7 +2076,7 @@
                         </div>
                         <div class="sec-title" onclick="togSec(this)" style="margin-top:6px"><span>🖼 画布设置</span><span class="arrow">▾</span></div>
                         <div class="sec-body">
-                            <!-- ★ 所有重置按钮已移至 slabel 左侧 -->
+                            <!-- ★ 所有重置按钮与数值输入框已在同一行内，确保UI内布局 -->
                             <div class="slider-wrap">
                                 <div class="slider-label-row">
                                     <button class="reset-btn" onclick="resetSlider('gap',0)">↺</button>
@@ -2618,7 +2618,7 @@
         fi.addEventListener('change', function(e) { handleFiles(e.target.files);
             fi.value = ''; });
 
-        // 按文件顺序加载，保持用户选择的顺序
+        // ★ 按文件顺序加载，严格保持用户选择的顺序
         function handleFiles(files) {
             var fileArray = Array.from(files);
             var total = fileArray.length;
@@ -3483,7 +3483,8 @@
                 var origImgs = imgs;
                 imgs = pageImgs;
                 document.getElementById('startNum').value = currentSn;
-                renderToCtx(tempCtx, 1, true);
+                // ★ 批量生成也强制使用 3x 高清输出
+                renderToCtx(tempCtx, 3, true);
                 imgs = origImgs;
 
                 var rangeStr = currentSn + '~' + (currentSn + pageImgs.length - 1);
@@ -3597,6 +3598,7 @@
             a.click();
         }
 
+        // ★ 单独下载：直接使用已保存的 3x PNG 数据，确保无损
         function dlSaved(i) {
             var a = document.createElement('a');
             a.download = 'bear_' + saved[i].range.replace('~', '-') + '.png';
@@ -3604,6 +3606,7 @@
             a.click();
         }
 
+        // ★ 全部下载：从保存的 3x PNG 数据生成 ZIP，确保无损
         async function dlAll() {
             if (!saved.length) { alert('没有已保存预览'); return; }
             var zip = new JSZip();
