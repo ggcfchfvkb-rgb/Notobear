@@ -452,9 +452,25 @@
         .slider-label-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            gap: 4px;
             margin-bottom: 4px;
-            gap: 6px;
+        }
+        .slider-label-row .reset-btn {
+            order: 1;
+            flex-shrink: 0;
+        }
+        .slider-label-row .slider-num {
+            order: 2;
+            flex-shrink: 0;
+            width: 40px;
+        }
+        .slider-label-row .slabel {
+            order: 3;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .slider-label-row .slabel {
             font-size: 11px;
@@ -467,7 +483,7 @@
             text-overflow: ellipsis;
         }
         .slider-num {
-            width: 60px;
+            width: 40px;
             flex-shrink: 0;
             padding: 3px 5px;
             border: 1.5px solid var(--border);
@@ -512,7 +528,6 @@
             flex: 1;
         }
 
-        /* ★ 重置按钮样式 — 与数值输入框在同一行内 */
         .reset-btn {
             width: 22px;
             height: 22px;
@@ -1899,7 +1914,7 @@
                 <div class="help-head-icon">🐻</div>
                 <div class="help-head-text">
                     <div class="help-head-title">熊啊熊啊熊拼图 · 使用说明书</div>
-                    <div class="help-head-sub">BEAR COLLAGE MAKER · USER GUIDE v2.0</div>
+                    <div class="help-head-sub">BEAR COLLAGE MAKER · USER GUIDE v2.1</div>
                 </div>
                 <button class="help-close" onclick="closeHelp()">✕</button>
             </div>
@@ -1978,6 +1993,25 @@
                     <div class="h-tip" style="margin-top:10px;"><span class="h-tip-icon">⚠️</span><div class="h-tip-text"><b>草稿层</b>只在预览中可见，<b>不会出现在任何导出或保存的图片里</b>，确认添加后才正式渲染。</div></div>
                 </div>
                 <div class="h-divider"></div>
+
+                <!-- ★ 更新记录板块 -->
+                <div class="h-section">
+                    <div class="h-sec-title"><span class="h-sec-icon">📝</span>更新记录</div>
+                    <div class="h-items">
+                        <div class="h-item">
+                            <div class="h-item-body">
+                                <div class="h-item-name">2026-08-01 · v2.1</div>
+                                <div class="h-item-desc">
+                                    🐾 滑块数值输入框优化，更小更靠左，避免与分割线遮挡；<br>
+                                    🐾 保存输出倍率与顶部工具栏选择同步（1×/2×/3×）；<br>
+                                    🐾 帮助手册新增「更新记录」板块，持续追踪版本变化。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-divider"></div>
+
                 <div style="text-align:center;padding:8px 0 4px;">
                     <div style="font-size:11px;color:var(--text2);font-weight:700;">🐻 熊啊熊啊熊拼图 · Bear Collage Maker</div>
                     <div style="font-size:10px;color:var(--text2);opacity:0.6;margin-top:3px;">运行于浏览器本地 · 数据不上传 · 安全私密 🔒</div>
@@ -2076,7 +2110,6 @@
                         </div>
                         <div class="sec-title" onclick="togSec(this)" style="margin-top:6px"><span>🖼 画布设置</span><span class="arrow">▾</span></div>
                         <div class="sec-body">
-                            <!-- ★ 所有重置按钮与数值输入框已在同一行内，确保UI内布局 -->
                             <div class="slider-wrap">
                                 <div class="slider-label-row">
                                     <button class="reset-btn" onclick="resetSlider('gap',0)">↺</button>
@@ -2535,13 +2568,11 @@
             document.getElementById('txtSzN').value = v; var r = document.getElementById('txtSzR');
             r.value = Math.min(Math.max(+v, +r.min), +r.max); }
 
-        // ★ 重置滑块通用函数
         function resetSlider(sliderId, defaultValue) {
             var slider = document.getElementById(sliderId);
             var numInput = document.getElementById(sliderId + 'N');
             if (slider) {
                 slider.value = defaultValue;
-                // 触发 input 事件
                 var evt = new Event('input', { bubbles: true });
                 slider.dispatchEvent(evt);
             }
@@ -2618,7 +2649,6 @@
         fi.addEventListener('change', function(e) { handleFiles(e.target.files);
             fi.value = ''; });
 
-        // ★ 按文件顺序加载，严格保持用户选择的顺序
         function handleFiles(files) {
             var fileArray = Array.from(files);
             var total = fileArray.length;
@@ -3235,7 +3265,6 @@
 
         function drawWMOnRect(c, wm, x, y, w, h, alpha, blend, sp, pos, offsetX, offsetY) {
             if (!wm) return;
-            // ★ 强制启用高质量图像平滑
             c.imageSmoothingEnabled = true;
             c.imageSmoothingQuality = 'high';
             var sc = Math.min(w * sp / wm.width, h * sp / wm.height);
@@ -3257,7 +3286,6 @@
                     dy = y + mg; } else if (pos === 'bl') { dx = x + mg;
                     dy = y + h - dh - mg; } else { dx = x + w - dw - mg;
                     dy = y + h - dh - mg; }
-                // 应用偏移量 (offsetX, offsetY 为百分比，相对于水印尺寸)
                 var offX = (offsetX || 0) * dw;
                 var offY = (offsetY || 0) * dh;
                 dx += offX;
@@ -3269,7 +3297,6 @@
 
         function drawPPWMOnCell(c, wm, pos, radius) {
             c.save();
-            // ★ 在 clip 之前也设置图像平滑
             c.imageSmoothingEnabled = true;
             c.imageSmoothingQuality = 'high';
             c.beginPath();
@@ -3284,7 +3311,6 @@
         function renderToCtx(c, scale, withDraft) {
             scale = scale || 1;
             withDraft = (withDraft !== false);
-            // ★ 全局启用高质量图像平滑
             c.imageSmoothingEnabled = true;
             c.imageSmoothingQuality = 'high';
             if (imgs.length === 0) {
@@ -3446,7 +3472,6 @@
             initSwapGrid();
         }
 
-        // 批量拼图：异步分批处理，避免卡顿
         function applyCurrentAndSave() {
             if (imgs.length === 0) {
                 alert('🐻 请先添加图片~');
@@ -3460,6 +3485,7 @@
             var startIdx = 0;
             var page = 1;
             var results = [];
+            var scale = +document.getElementById('dlScale').value;
 
             var statusMsg = document.getElementById('imgCount');
             var originalText = statusMsg.textContent;
@@ -3483,8 +3509,7 @@
                 var origImgs = imgs;
                 imgs = pageImgs;
                 document.getElementById('startNum').value = currentSn;
-                // ★ 批量生成也强制使用 3x 高清输出
-                renderToCtx(tempCtx, 3, true);
+                renderToCtx(tempCtx, scale, true);
                 imgs = origImgs;
 
                 var rangeStr = currentSn + '~' + (currentSn + pageImgs.length - 1);
@@ -3506,14 +3531,14 @@
             processNextBatch();
         }
 
-        // ★ 保存并继续：强制使用 3x PNG 输出
         function saveAndContinue() {
             if (imgs.length === 0) { alert('🐻 请先添加图片~'); return; }
             var sn = +document.getElementById('startNum').value,
                 cnt = imgs.length;
+            var scale = +document.getElementById('dlScale').value;
             var exp = document.createElement('canvas'),
                 ec = exp.getContext('2d');
-            renderToCtx(ec, 3, false);
+            renderToCtx(ec, scale, false);
             saved.push({ url: exp.toDataURL('image/png'), range: sn + '~' + (sn + cnt - 1), cnt: cnt, ts: Date
                     .now() });
             gNext = sn + cnt;
@@ -3598,7 +3623,6 @@
             a.click();
         }
 
-        // ★ 单独下载：直接使用已保存的 3x PNG 数据，确保无损
         function dlSaved(i) {
             var a = document.createElement('a');
             a.download = 'bear_' + saved[i].range.replace('~', '-') + '.png';
@@ -3606,7 +3630,6 @@
             a.click();
         }
 
-        // ★ 全部下载：从保存的 3x PNG 数据生成 ZIP，确保无损
         async function dlAll() {
             if (!saved.length) { alert('没有已保存预览'); return; }
             var zip = new JSZip();
