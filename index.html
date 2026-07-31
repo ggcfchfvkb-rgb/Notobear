@@ -3278,10 +3278,22 @@
                 .blend, wmDraft.sz, wmDraft.pos);
         }
 
-        function renderCanvas() { renderToCtx(ctx, 1, true);
+        function renderCanvas() {
+            // ★ 使用 2x 比例进行高清预览
+            var scale = 2;
+            renderToCtx(ctx, scale, true);
+            // 调整画布样式以正确显示
+            var lay = calcLayout();
+            var w = lay.W;
+            var h = lay.H;
+            mc.style.width = (w) + 'px';
+            mc.style.height = (h) + 'px';
+            mc.style.maxWidth = '100%';
+            mc.style.maxHeight = '100%';
             updateRange();
             document.getElementById('globalNext').textContent = gNext;
-            document.getElementById('nextDisp').textContent = gNext; }
+            document.getElementById('nextDisp').textContent = gNext;
+        }
 
         var swapSrc = null,
             swapDst = null;
