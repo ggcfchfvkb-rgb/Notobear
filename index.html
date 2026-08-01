@@ -2039,8 +2039,8 @@
                 <button class="tb-btn tb-g" onclick="dlCurrent('jpeg')">💾 JPG</button>
                 <select id="dlScale" class="scale-sel">
                     <option value="1">1×</option>
-                    <option value="2">2×</option>
-                    <option value="3" selected>3×</option>
+                    <option value="2" selected>2×</option>
+                    <option value="3">3×</option>
                 </select>
             </div>
             <div class="preview-hint">🔍 滚轮缩放 · 拖拽移动 · 双指捏合</div>
@@ -3366,10 +3366,18 @@
                 .blend, wmDraft.sz, wmDraft.pos);
         }
 
-        function renderCanvas() { renderToCtx(ctx, 1, true);
+        function renderCanvas() {
+            var scale = +document.getElementById('dlScale').value;
+            renderToCtx(ctx, scale, true);
             updateRange();
             document.getElementById('globalNext').textContent = gNext;
-            document.getElementById('nextDisp').textContent = gNext; }
+            document.getElementById('nextDisp').textContent = gNext;
+        }
+
+        // 监听倍率变化，自动刷新预览
+        document.getElementById('dlScale').addEventListener('change', function() {
+            renderCanvas();
+        });
 
         var swapSrc = null,
             swapDst = null;
