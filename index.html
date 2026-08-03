@@ -2649,79 +2649,94 @@
         fi.addEventListener('change', function(e) { handleFiles(e.target.files);
             fi.value = ''; });
 
-        function handleFiles(files) {
+        // ★ 优化：并发控制，每批最多处理 8 个文件，避免内存爆炸
+        var _batchTimer = null;
+        async function handleFiles(files) {
             var fileArray = Array.from(files);
             var total = fileArray.length;
             var loaded = 0;
-            var hasImages = false;
             var isBatch = total > 10;
+            var concurrency = 8; // 同时处理 8 个文件
 
-            async function loadFilesSequentially() {
-                for (var i = 0; i < fileArray.length; i++) {
-                    var f = fileArray[i];
-                    if (!f.type.startsWith('image/')) {
-                        loaded++;
-                        if (loaded === total && isBatch) {
-                            if (_batchTimer) clearTimeout(_batchTimer);
-                            _batchTimer = setTimeout(function() {
-                                refreshImgs();
-                                renderCanvas();
-                                _batchTimer = null;
-                            }, 100);
+            // 逐批处理，每批内并行，批次间串行
+            for (var start = 0; start < fileArray.length; start += concurrency) {
+                var end = Math.min(start + concurrency, fileArray.length);
+                var batch = fileArray.slice(start, end);
+
+                var promises = batch.map(function(f) {
+                    return new Promise(function(resolve, reject) {
+                        if (!f.type.startsWith('image/')) {
+                            loaded++;
+                            resolve();
+                            return;
                         }
-                        continue;
-                    }
-                    hasImages = true;
-                    var dataUrl = await new Promise(function(resolve, reject) {
-                        var r = new FileReader();
-                        r.onload = function(ev) { resolve(ev.target.result); };
-                        r.onerror = function() { reject(r.error); };
-                        r.readAsDataURL(f);
+                        var reader = new FileReader();
+                        reader.onload = function(ev) {
+                            var dataUrl = ev.target.result;
+                            var img = new Image();
+                            img.onload = function() {
+                                imgs.push({ el: img, name: f.name, src: dataUrl });
+                                loaded++;
+                                resolve();
+                            };
+                            img.onerror = function() {
+                                // 图片加载失败也计数，防止死锁
+                                loaded++;
+                                resolve();
+                            };
+                            img.src = dataUrl;
+                        };
+                        reader.onerror = function() {
+                            loaded++;
+                            resolve();
+                        };
+                        reader.readAsDataURL(f);
                     });
-                    var img = new Image();
-                    await new Promise(function(resolve, reject) {
-                        img.onload = resolve;
-                        img.onerror = reject;
-                        img.src = dataUrl;
-                    });
-                    imgs.push({ el: img, name: f.name, src: dataUrl });
-                    loaded++;
-                    if (loaded === total) {
-                        if (isBatch) {
-                            if (_batchTimer) clearTimeout(_batchTimer);
-                            _batchTimer = setTimeout(function() {
-                                refreshImgs();
-                                renderCanvas();
-                                _batchTimer = null;
-                            }, 200);
-                        } else {
-                            refreshImgs();
-                            renderCanvas();
-                        }
-                    } else if (!isBatch) {
-                        refreshImgs();
-                        renderCanvas();
-                    }
+                });
+
+                await Promise.all(promises);
+
+                // 非批量模式下，每批处理完后刷新 UI
+                if (!isBatch) {
+                    refreshImgs();
+                    renderCanvas();
+                    // 让浏览器有机会响应
+                    await new Promise(r => setTimeout(r, 0));
                 }
             }
 
-            loadFilesSequentially();
+            // 所有图片处理完成，批量模式一次性刷新
+            if (isBatch) {
+                refreshImgs();
+                renderCanvas();
+            }
         }
 
-        var _batchTimer = null;
-
+        // ★ 优化：当图片超过 120 张时，只显示前 120 张，避免 DOM 过大
         function refreshImgs() {
             var sn = +document.getElementById('startNum').value;
-            document.getElementById('imgList').innerHTML = imgs.map(function(im, i) {
-                return '<div class="img-item"><img src="' + im.src + '"><span class="nm">' + (sn + i) + '. ' + im
+            var maxDisplay = 120;
+            var total = imgs.length;
+            var displayCount = Math.min(total, maxDisplay);
+            var html = '';
+            for (var i = 0; i < displayCount; i++) {
+                var im = imgs[i];
+                html += '<div class="img-item"><img src="' + im.src + '"><span class="nm">' + (sn + i) + '. ' + im
                     .name + '</span><button class="dl" onclick="rmImg(' + i + ')">✕</button></div>';
-            }).join('');
-            document.getElementById('imgCount').textContent = imgs.length;
+            }
+            if (total > maxDisplay) {
+                html += '<div style="text-align:center;color:var(--text2);font-size:10px;font-weight:700;padding:6px;">共 ' +
+                    total + ' 张图片，仅显示前 ' + maxDisplay + ' 张</div>';
+            }
+            document.getElementById('imgList').innerHTML = html;
+            document.getElementById('imgCount').textContent = total;
             updateRange();
             refreshPhotoPicker();
             initSwapGrid();
         }
 
+        // 删除图片时，如果删除的是显示范围内的图片，列表会更新；
+        // 如果删除的是未显示的图片，列表不会变化，但计数会更新
         function rmImg(i) {
             imgs.splice(i, 1);
             perPhotoWMs = perPhotoWMs.map(function(wm) {
