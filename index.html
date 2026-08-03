@@ -1914,7 +1914,7 @@
                 <div class="help-head-icon">🐻</div>
                 <div class="help-head-text">
                     <div class="help-head-title">熊啊熊啊熊拼图 · 使用说明书</div>
-                    <div class="help-head-sub">BEAR COLLAGE MAKER · USER GUIDE v2.3</div>
+                    <div class="help-head-sub">BEAR COLLAGE MAKER · USER GUIDE v2.4</div>
                 </div>
                 <button class="help-close" onclick="closeHelp()">✕</button>
             </div>
@@ -2000,12 +2000,11 @@
                     <div class="h-items">
                         <div class="h-item">
                             <div class="h-item-body">
-                                <div class="h-item-name">2026-08-03 · v2.3</div>
+                                <div class="h-item-name">2026-08-03 · v2.4</div>
                                 <div class="h-item-desc">
-                                    🐾 彻底修复大量图片导入（200+ 张）导致的闪退与功能瘫痪问题；<br>
-                                    🐾 渲染引擎优化：仅绘制当前网格容量内的图片，避免Canvas过载；<br>
-                                    🐾 交换图片、指定水印等面板同步限制为网格容量，大幅降低DOM与内存压力；<br>
-                                    🐾 批量导入并发数下调，防止内存溢出。
+                                    🐾 修复交换图片和指定水印面板只能选择网格容量内图片的问题；<br>
+                                    🐾 现在交换与选择操作支持全部已导入的图片，不限网格数量；<br>
+                                    🐾 优化大批量图片下的选择交互流畅度。
                                 </div>
                             </div>
                         </div>
@@ -3003,10 +3002,9 @@
         function refreshPhotoPicker() {
             var grid = document.getElementById('photoPicker'),
                 sn = +document.getElementById('startNum').value;
-            var capacity = gRows * gCols;
-            var displayImgs = imgs.slice(0, capacity);
-            if (displayImgs.length === 0) { grid.innerHTML = '<div class="pp-empty">🐻 请先在「布局」Tab 添加图片</div>'; return; }
-            grid.innerHTML = displayImgs.map(function(im, i) {
+            if (imgs.length === 0) { grid.innerHTML = '<div class="pp-empty">🐻 请先在「布局」Tab 添加图片</div>'; return; }
+            // 显示全部图片，不再受网格容量限制
+            grid.innerHTML = imgs.map(function(im, i) {
                 var sel = ppwmDraftTargets.has(i);
                 return '<div class="ppick-cell' + (sel ? ' sel' : '') + '" onclick="togglePick(' + i +
                     ')">' +
@@ -3023,9 +3021,11 @@
             updatePPWMDraft();
         }
 
-        function selectAllPick() { for (var i = 0; i < Math.min(imgs.length, gRows * gCols); i++) ppwmDraftTargets.add(i);
+        function selectAllPick() {
+            for (var i = 0; i < imgs.length; i++) ppwmDraftTargets.add(i);
             refreshPhotoPicker();
-            updatePPWMDraft(); }
+            updatePPWMDraft();
+        }
 
         function clearAllPick() { ppwmDraftTargets = new Set();
             refreshPhotoPicker();
@@ -3055,7 +3055,7 @@
             dz.classList.add('live');
             var sn = +document.getElementById('startNum').value,
                 cellSz = 42;
-            dg.innerHTML = imgs.slice(0, gRows * gCols).map(function(im, i) {
+            dg.innerHTML = imgs.map(function(im, i) {
                 var sel = ppwmDraftTargets.has(i);
                 return '<div class="ppwm-draft-cell" style="width:' + cellSz + 'px;height:' + cellSz +
                     'px;"><img class="base" src="' + im.src + '">' + (sel ?
@@ -3410,14 +3410,13 @@
 
         function initSwapGrid() {
             var grid = document.getElementById('swapGrid');
-            var capacity = gRows * gCols;
-            var displayImgs = imgs.slice(0, capacity);
-            if (displayImgs.length < 2) {
+            if (imgs.length < 2) {
                 grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text2);font-size:10px;font-weight:700;padding:8px;">至少需要2张图片才能交换</div>';
                 return;
             }
             var sn = +document.getElementById('startNum').value;
-            grid.innerHTML = displayImgs.map(function(im, i) {
+            // 显示全部图片，不再受网格容量限制
+            grid.innerHTML = imgs.map(function(im, i) {
                 var isSrc = (swapSrc === i);
                 var isDst = (swapDst === i);
                 var cls = 'sw-cell';
@@ -3446,7 +3445,7 @@
         }
 
         function handleSwapClick(idx) {
-            if (imgs.slice(0, gRows * gCols).length < 2) return;
+            if (imgs.length < 2) return;
             if (swapSrc === null) {
                 swapSrc = idx;
                 initSwapGrid();
@@ -3466,7 +3465,7 @@
         }
 
         function executeSwap() {
-            if (swapSrc === null || swapDst === null || swapSrc === swapDst || imgs.slice(0, gRows * gCols).length < 2) {
+            if (swapSrc === null || swapDst === null || swapSrc === swapDst || imgs.length < 2) {
                 clearSwapSelection();
                 return;
             }
