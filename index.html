@@ -1914,7 +1914,7 @@
                 <div class="help-head-icon">🐻</div>
                 <div class="help-head-text">
                     <div class="help-head-title">熊啊熊啊熊拼图 · 使用说明书</div>
-                    <div class="help-head-sub">BEAR COLLAGE MAKER · USER GUIDE v2.1</div>
+                    <div class="help-head-sub">BEAR COLLAGE MAKER · USER GUIDE v2.2</div>
                 </div>
                 <button class="help-close" onclick="closeHelp()">✕</button>
             </div>
@@ -1998,6 +1998,16 @@
                 <div class="h-section">
                     <div class="h-sec-title"><span class="h-sec-icon">📝</span>更新记录</div>
                     <div class="h-items">
+                        <div class="h-item">
+                            <div class="h-item-body">
+                                <div class="h-item-name">2026-08-03 · v2.2</div>
+                                <div class="h-item-desc">
+                                    🐾 修复批量导入大量图片（90+ 张）时界面卡顿、功能无法使用的 bug；<br>
+                                    🐾 优化图片加载机制，采用分批异步加载，大幅提升稳定性和响应速度；<br>
+                                    🐾 预览渲染加入动画帧调度，避免频繁渲染阻塞主线程。
+                                </div>
+                            </div>
+                        </div>
                         <div class="h-item">
                             <div class="h-item-body">
                                 <div class="h-item-name">2026-08-01 · v2.1</div>
@@ -2655,8 +2665,8 @@
             var fileArray = Array.from(files);
             var total = fileArray.length;
             var loaded = 0;
-            var isBatch = total > 10;
             var concurrency = 8; // 同时处理 8 个文件
+            var updateScheduled = false;
 
             // 逐批处理，每批内并行，批次间串行
             for (var start = 0; start < fileArray.length; start += concurrency) {
@@ -2677,10 +2687,14 @@
                             img.onload = function() {
                                 imgs.push({ el: img, name: f.name, src: dataUrl });
                                 loaded++;
+                                // 每加载完一张，检查是否全部完成，如果是则触发更新
+                                if (loaded === total && !updateScheduled) {
+                                    updateScheduled = true;
+                                    scheduleUpdate();
+                                }
                                 resolve();
                             };
                             img.onerror = function() {
-                                // 图片加载失败也计数，防止死锁
                                 loaded++;
                                 resolve();
                             };
@@ -2695,20 +2709,20 @@
                 });
 
                 await Promise.all(promises);
-
-                // 非批量模式下，每批处理完后刷新 UI
-                if (!isBatch) {
-                    refreshImgs();
-                    renderCanvas();
-                    // 让浏览器有机会响应
-                    await new Promise(r => setTimeout(r, 0));
-                }
             }
 
-            // 所有图片处理完成，批量模式一次性刷新
-            if (isBatch) {
-                refreshImgs();
-                renderCanvas();
+            // 如果文件总数是 0 或者全部为非图片，手动触发一次更新
+            if (loaded >= total && !updateScheduled) {
+                scheduleUpdate();
+            }
+
+            function scheduleUpdate() {
+                if (_batchTimer) clearTimeout(_batchTimer);
+                _batchTimer = setTimeout(function() {
+                    refreshImgs();
+                    renderCanvas();
+                    _batchTimer = null;
+                }, 150); // 延迟 150ms，确保所有图片已加载完成
             }
         }
 
@@ -3382,11 +3396,14 @@
         }
 
         function renderCanvas() {
-            var scale = +document.getElementById('dlScale').value;
-            renderToCtx(ctx, scale, true);
-            updateRange();
-            document.getElementById('globalNext').textContent = gNext;
-            document.getElementById('nextDisp').textContent = gNext;
+            // ★ 使用 requestAnimationFrame 避免频繁渲染阻塞主线程
+            requestAnimationFrame(function() {
+                var scale = +document.getElementById('dlScale').value;
+                renderToCtx(ctx, scale, true);
+                updateRange();
+                document.getElementById('globalNext').textContent = gNext;
+                document.getElementById('nextDisp').textContent = gNext;
+            });
         }
 
         // 监听倍率变化，自动刷新预览
