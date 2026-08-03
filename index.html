@@ -3297,7 +3297,7 @@
             c.globalAlpha = alpha;
             c.globalCompositeOperation = blend;
             if (pos === 'tile') {
-                var p = 10;
+                var p = 0; // ★ 平铺间隙设为 0，图片之间无空隙
                 for (var ty = y; ty < y + h; ty += dh + p)
                     for (var tx = x; tx < x + w; tx += dw + p) c.drawImage(wm, tx, ty, dw, dh);
             } else {
