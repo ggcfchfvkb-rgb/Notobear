@@ -1914,7 +1914,7 @@
                 <div class="help-head-icon">🐻</div>
                 <div class="help-head-text">
                     <div class="help-head-title">熊啊熊啊熊拼图 · 使用说明书</div>
-                    <div class="help-head-sub">BEAR COLLAGE MAKER · USER GUIDE v2.2</div>
+                    <div class="help-head-sub">BEAR COLLAGE MAKER · USER GUIDE v2.3</div>
                 </div>
                 <button class="help-close" onclick="closeHelp()">✕</button>
             </div>
@@ -1994,27 +1994,18 @@
                 </div>
                 <div class="h-divider"></div>
 
-                <!-- ★ 更新记录板块 -->
+                <!-- ★ 更新记录板块（已替换为最新版本） -->
                 <div class="h-section">
                     <div class="h-sec-title"><span class="h-sec-icon">📝</span>更新记录</div>
                     <div class="h-items">
                         <div class="h-item">
                             <div class="h-item-body">
-                                <div class="h-item-name">2026-08-03 · v2.2</div>
+                                <div class="h-item-name">2026-08-03 · v2.3</div>
                                 <div class="h-item-desc">
-                                    🐾 修复批量导入大量图片（90+ 张）时界面卡顿、功能无法使用的 bug；<br>
-                                    🐾 优化图片加载机制，采用分批异步加载，大幅提升稳定性和响应速度；<br>
-                                    🐾 预览渲染加入动画帧调度，避免频繁渲染阻塞主线程。
-                                </div>
-                            </div>
-                        </div>
-                        <div class="h-item">
-                            <div class="h-item-body">
-                                <div class="h-item-name">2026-08-01 · v2.1</div>
-                                <div class="h-item-desc">
-                                    🐾 滑块数值输入框优化，更小更靠左，避免与分割线遮挡；<br>
-                                    🐾 保存输出倍率与顶部工具栏选择同步（1×/2×/3×）；<br>
-                                    🐾 帮助手册新增「更新记录」板块，持续追踪版本变化。
+                                    🐾 彻底修复大量图片导入（200+ 张）导致的闪退与功能瘫痪问题；<br>
+                                    🐾 渲染引擎优化：仅绘制当前网格容量内的图片，避免Canvas过载；<br>
+                                    🐾 交换图片、指定水印等面板同步限制为网格容量，大幅降低DOM与内存压力；<br>
+                                    🐾 批量导入并发数下调，防止内存溢出。
                                 </div>
                             </div>
                         </div>
@@ -2659,13 +2650,13 @@
         fi.addEventListener('change', function(e) { handleFiles(e.target.files);
             fi.value = ''; });
 
-        // ★ 优化：并发控制，每批最多处理 8 个文件，避免内存爆炸
+        // ★ 优化：并发控制，每批最多处理 4 个文件，避免内存爆炸
         var _batchTimer = null;
         async function handleFiles(files) {
             var fileArray = Array.from(files);
             var total = fileArray.length;
             var loaded = 0;
-            var concurrency = 8; // 同时处理 8 个文件
+            var concurrency = 4; // 同时处理 4 个文件
             var updateScheduled = false;
 
             // 逐批处理，每批内并行，批次间串行
@@ -3012,8 +3003,10 @@
         function refreshPhotoPicker() {
             var grid = document.getElementById('photoPicker'),
                 sn = +document.getElementById('startNum').value;
-            if (imgs.length === 0) { grid.innerHTML = '<div class="pp-empty">🐻 请先在「布局」Tab 添加图片</div>'; return; }
-            grid.innerHTML = imgs.map(function(im, i) {
+            var capacity = gRows * gCols;
+            var displayImgs = imgs.slice(0, capacity);
+            if (displayImgs.length === 0) { grid.innerHTML = '<div class="pp-empty">🐻 请先在「布局」Tab 添加图片</div>'; return; }
+            grid.innerHTML = displayImgs.map(function(im, i) {
                 var sel = ppwmDraftTargets.has(i);
                 return '<div class="ppick-cell' + (sel ? ' sel' : '') + '" onclick="togglePick(' + i +
                     ')">' +
@@ -3030,7 +3023,7 @@
             updatePPWMDraft();
         }
 
-        function selectAllPick() { for (var i = 0; i < imgs.length; i++) ppwmDraftTargets.add(i);
+        function selectAllPick() { for (var i = 0; i < Math.min(imgs.length, gRows * gCols); i++) ppwmDraftTargets.add(i);
             refreshPhotoPicker();
             updatePPWMDraft(); }
 
@@ -3062,7 +3055,7 @@
             dz.classList.add('live');
             var sn = +document.getElementById('startNum').value,
                 cellSz = 42;
-            dg.innerHTML = imgs.map(function(im, i) {
+            dg.innerHTML = imgs.slice(0, gRows * gCols).map(function(im, i) {
                 var sel = ppwmDraftTargets.has(i);
                 return '<div class="ppwm-draft-cell" style="width:' + cellSz + 'px;height:' + cellSz +
                     'px;"><img class="base" src="' + im.src + '">' + (sel ?
@@ -3129,7 +3122,7 @@
             refreshPerPhotoWMs();
             renderCanvas(); }
 
-        function calcLayout() {
+        function calcLayout(maxItems) {
             var gap = gv('gapN'),
                 pd = gv('padN'),
                 cw = gv('cwN'),
@@ -3146,7 +3139,8 @@
             var acw = (W - pd * 2 - (gCols - 1) * gap) / gCols,
                 ach = (H - pd * 2 - (gRows - 1) * gap) / gRows;
             var items = [];
-            for (var i = 0; i < imgs.length; i++) {
+            var count = Math.min(imgs.length, maxItems || gRows * gCols);
+            for (var i = 0; i < count; i++) {
                 var rr = Math.floor(i / gCols),
                     cc = i % gCols;
                 items.push({ x: pd + cc * (acw + gap), y: pd + rr * (ach + gap), w: acw, h: ach });
@@ -3356,7 +3350,7 @@
                 c.fillText('🐾  🐾  🐾', 400, 330);
                 return;
             }
-            var lay = calcLayout();
+            var lay = calcLayout(gRows * gCols);
             var bg = document.getElementById('bgColor').value,
                 radius = gv('radN');
             var showN = document.getElementById('showNum').checked,
@@ -3416,12 +3410,14 @@
 
         function initSwapGrid() {
             var grid = document.getElementById('swapGrid');
-            if (imgs.length < 2) {
+            var capacity = gRows * gCols;
+            var displayImgs = imgs.slice(0, capacity);
+            if (displayImgs.length < 2) {
                 grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text2);font-size:10px;font-weight:700;padding:8px;">至少需要2张图片才能交换</div>';
                 return;
             }
             var sn = +document.getElementById('startNum').value;
-            grid.innerHTML = imgs.map(function(im, i) {
+            grid.innerHTML = displayImgs.map(function(im, i) {
                 var isSrc = (swapSrc === i);
                 var isDst = (swapDst === i);
                 var cls = 'sw-cell';
@@ -3450,7 +3446,7 @@
         }
 
         function handleSwapClick(idx) {
-            if (imgs.length < 2) return;
+            if (imgs.slice(0, gRows * gCols).length < 2) return;
             if (swapSrc === null) {
                 swapSrc = idx;
                 initSwapGrid();
@@ -3470,7 +3466,7 @@
         }
 
         function executeSwap() {
-            if (swapSrc === null || swapDst === null || swapSrc === swapDst || imgs.length < 2) {
+            if (swapSrc === null || swapDst === null || swapSrc === swapDst || imgs.slice(0, gRows * gCols).length < 2) {
                 clearSwapSelection();
                 return;
             }
